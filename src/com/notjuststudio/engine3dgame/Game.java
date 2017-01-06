@@ -2,6 +2,7 @@ package com.notjuststudio.engine3dgame;
 
 import com.notjuststudio.engine3dgame.attributes.Model;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
+import com.notjuststudio.engine3dgame.util.Maths;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Quaternion;
 import org.lwjgl.util.vector.Vector3f;
@@ -42,6 +43,8 @@ public class Game {
         picture.addAttribute(model);
 
         while(!Display.isCloseRequested()) {
+
+            picture.addLocalAngle(Maths.createRotationQuaternion((float)Math.PI/2 * DisplayManager.getFrameTimeSeconds(), new Vector3f(0,0,1)));
 
             Renderer.prepare();
 
