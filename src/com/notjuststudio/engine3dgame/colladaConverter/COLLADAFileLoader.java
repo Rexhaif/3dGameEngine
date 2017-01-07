@@ -53,7 +53,7 @@ public class COLLADAFileLoader {
             ));
         }
 
-        stringFloats = mesh.getSource().get(2).floatArray.getValue().split(" ");
+		stringFloats = mesh.getSource().get(2).floatArray.getValue().split(" ");
 
         for (int i = 0; i < mesh.getSource().get(2).getTechniqueCommon().getAccessor().getCount(); i++) {
             textures.add(new Vector2f(
@@ -62,9 +62,9 @@ public class COLLADAFileLoader {
             ));
         }
 
-        stringFloats = mesh.getPolylist().getP().split(" ");
+		stringFloats = mesh.getPolylist().getP().split(" ");
 
-        for (int i = 0; i < mesh.getPolylist().getCount(); i++) {
+        for (int i = 0; i < mesh.getPolylist().getCount() * 3; i++) {
             int[] vertex = {
                     Integer.parseInt(stringFloats[i * 3]),
                     Integer.parseInt(stringFloats[i * 3 + 1]),
@@ -83,18 +83,14 @@ public class COLLADAFileLoader {
 
 		int[] indicesArray = convertIndicesListToArray(indices);
 
-        for (int i = 0; i < normalsArray.length / 3; i++) {
-            System.out.println(normalsArray[i * 3] + " " + normalsArray[i * 3 + 1] + " " + normalsArray[i * 3 + 2]);
-        }
-
 		return Loader.createModelData(indicesArray, verticesArray, texturesArray, normalsArray);
 	}
 
 	private static void processVertex(int[] vertex, List<Vertex> vertices, List<Integer> indices) {
 		int index = vertex[0];
 		Vertex currentVertex = vertices.get(index);
-		int textureIndex = vertex[1];
-		int normalIndex = vertex[2];
+		int textureIndex = vertex[2];
+		int normalIndex = vertex[1];
 		if (!currentVertex.isSet()) {
 			currentVertex.setTextureIndex(textureIndex);
 			currentVertex.setNormalIndex(normalIndex);

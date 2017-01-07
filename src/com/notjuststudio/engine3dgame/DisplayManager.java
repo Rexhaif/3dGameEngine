@@ -20,7 +20,8 @@ public class DisplayManager {
 
         try {
             mode = Display.getDesktopDisplayMode();
-            Display.setDisplayModeAndFullscreen(mode);
+            Display.setDisplayMode(mode);
+            //Display.setFullscreen(true);
             Display.create(new PixelFormat(), attribs);
             Display.setTitle("GAME OF THE YEAR");
 

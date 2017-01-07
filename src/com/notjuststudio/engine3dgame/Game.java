@@ -48,7 +48,7 @@ public class Game {
         while(!Display.isCloseRequested()) {
 
             cameraKeeper.move();
-            box.addLocalAngle((float)Math.PI/4 * DisplayManager.getFrameTimeSeconds(), 0,1,0);
+            box.addLocalAngle((float)Math.PI/4 * DisplayManager.getFrameTimeSeconds(), 1,1,0);
 
             Renderer.prepare();
 

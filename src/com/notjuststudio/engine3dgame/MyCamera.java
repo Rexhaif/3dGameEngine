@@ -17,11 +17,17 @@ public class MyCamera extends Location {
     }
 
     public void move() {
-        if (Keyboard.isKeyDown(Keyboard.KEY_D)){
-            addLocalPosition(new Vector3f(0.1f * DisplayManager.getFrameTimeSeconds(), 0,0));
+        if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+            addLocalPosition(0.1f * DisplayManager.getFrameTimeSeconds(), 0, 0);
         }
-        if (Keyboard.isKeyDown(Keyboard.KEY_A)){
-            addLocalPosition(new Vector3f(-0.1f * DisplayManager.getFrameTimeSeconds(), 0,0));
+        if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+            addLocalPosition(-0.1f * DisplayManager.getFrameTimeSeconds(), 0, 0);
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+            addLocalPosition(0, 0.1f * DisplayManager.getFrameTimeSeconds(), 0);
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+            addLocalPosition(0, -0.1f * DisplayManager.getFrameTimeSeconds(), 0);
         }
     }
 
