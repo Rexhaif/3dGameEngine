@@ -26,9 +26,8 @@ public class Renderer {
         GL30.glBindVertexArray(model.getData().getVaoID());
         GL20.glEnableVertexAttribArray(0);
         GL20.glEnableVertexAttribArray(1);
-        Matrix4f transformationMatrix = Maths.createTransformationMatrix(location.getPosition(), location.getAngle(), location.getScale());
         MyShaderProgram shader = (MyShaderProgram)model.getTexture().getShaderProgram();
-        shader.loadTransformationMatrix(transformationMatrix);
+        shader.loadTransformationMatrix(location.getTransformationMatrix());
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getTextureID());
         GL11.glDrawElements(GL11.GL_TRIANGLES, model.getData().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
