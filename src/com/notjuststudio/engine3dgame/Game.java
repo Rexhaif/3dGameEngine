@@ -1,6 +1,7 @@
 package com.notjuststudio.engine3dgame;
 
 import com.notjuststudio.engine3dgame.attributes.Attribute;
+import com.notjuststudio.engine3dgame.attributes.Light;
 import com.notjuststudio.engine3dgame.attributes.Model;
 import com.notjuststudio.engine3dgame.colladaConverter.COLLADA;
 import com.notjuststudio.engine3dgame.colladaConverter.COLLADAFileLoader;
@@ -37,13 +38,18 @@ public class Game {
 
         ModelData boxModel = COLLADAFileLoader.loadDAE("res/cube1.dae");
 
-        ModelTexture texture = new ModelTexture(Loader.loadTexture("res/steam.png"), new MyShaderProgram());
+        ModelTexture texture = new ModelTexture(Loader.loadTexture("res/steam.png"), new MyShaderProgram()).setShineDamper(10).setReflectivity(1);
         Model model = new Model(boxModel, texture);
 
         Location box = new Location().setLocalPosition(0,0,-5);
         box.addAttribute(model);
 
         MyCamera cameraKeeper = new MyCamera();
+
+        Location lamp = new Location().setLocalPosition(-5,5,-2.5f);
+        Light light = new Light(1,1,1);
+
+        lamp.addAttribute(light);
 
         while(!Display.isCloseRequested()) {
 
@@ -53,7 +59,7 @@ public class Game {
             Renderer.prepare();
 
             ((Model)box.getAttributeOfType(Attribute.Type.RENDER_MODEL)).getTexture().getShaderProgram().useThis();
-            Renderer.render(cameraKeeper,box);
+            Renderer.render(cameraKeeper,lamp,box);
 
             ShaderProgram.useNone();
 
