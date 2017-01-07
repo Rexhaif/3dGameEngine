@@ -1,5 +1,6 @@
 package com.notjuststudio.engine3dgame;
 
+import com.notjuststudio.engine3dgame.attributes.Attribute;
 import com.notjuststudio.engine3dgame.attributes.Model;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 import com.notjuststudio.engine3dgame.util.Maths;
@@ -39,17 +40,43 @@ public class Game {
         ModelTexture texture = new ModelTexture(Loader.loadTexture("res/steam.png"), new MyShaderProgram());
         Model model = new Model(restangle, texture);
 
-        Location picture = new Location(new Vector3f(0,0,0), new Quaternion(0,0,0,1),new Vector3f(1,1,1));
-        picture.addAttribute(model);
+        Location picture1 = Location.getDefault().setLocalPosition(new Vector3f(0.5f,0.5f,0)).setLocalScale(new Vector3f(0.5f, 0.5f, 0.5f));
+        picture1.addAttribute(model.getCopy());
+        Location picture2 = Location.getDefault().setLocalPosition(new Vector3f(-0.5f,0.5f,0)).setLocalScale(new Vector3f(0.5f, 0.5f, 0.5f));
+        picture2.addAttribute(model.getCopy());
+        Location picture3 = Location.getDefault().setLocalPosition(new Vector3f(-0.5f,-0.5f,0)).setLocalScale(new Vector3f(0.5f, 0.5f, 0.5f));
+        picture3.addAttribute(model.getCopy());
+        Location picture4 = Location.getDefault().setLocalPosition(new Vector3f(0.5f,-0.5f,0)).setLocalScale(new Vector3f(0.5f, 0.5f, 0.5f));
+        picture4.addAttribute(model.getCopy());
+        Location main_axis  = Location.getDefault().setLocalPosition(new Vector3f(0.5f,0,0)).setLocalScale(new Vector3f(0.5f,0.5f,0.5f));
+        main_axis.addChild(picture1);
+        main_axis.addChild(picture2);
+        main_axis.addChild(picture3);
+        main_axis.addChild(picture4);
+        main_axis.addAttribute(model.getCopy());
 
         while(!Display.isCloseRequested()) {
 
-            picture.addLocalAngle(Maths.createRotationQuaternion((float)Math.PI/2 * DisplayManager.getFrameTimeSeconds(), new Vector3f(0,0,1)));
+            main_axis.addLocalPosition(new Vector3f(-(float)Math.PI / 28 * DisplayManager.getFrameTimeSeconds(),0,0));
+
+            main_axis.addLocalAngle(Maths.createRotationQuaternion(-(float)Math.PI / 7 * DisplayManager.getFrameTimeSeconds(), new Vector3f(0,0,1)));
+            picture1.addLocalAngle(Maths.createRotationQuaternion(-(float)Math.PI / 7 * DisplayManager.getFrameTimeSeconds(), new Vector3f(0,0,1)));
+            picture2.addLocalAngle(Maths.createRotationQuaternion(-(float)Math.PI / 7 * DisplayManager.getFrameTimeSeconds(), new Vector3f(0,0,1)));
+            picture3.addLocalAngle(Maths.createRotationQuaternion(-(float)Math.PI / 7 * DisplayManager.getFrameTimeSeconds(), new Vector3f(0,0,1)));
+            picture4.addLocalAngle(Maths.createRotationQuaternion(-(float)Math.PI / 7 * DisplayManager.getFrameTimeSeconds(), new Vector3f(0,0,1)));
 
             Renderer.prepare();
 
-            model.getTexture().getShaderProgram().useThis();
-            Renderer.render(picture);
+            ((Model)main_axis.getAttributeType(Attribute.Type.RENDER_MODEL)).getTexture().getShaderProgram().useThis();
+            Renderer.render(main_axis);
+            ((Model)picture1.getAttributeType(Attribute.Type.RENDER_MODEL)).getTexture().getShaderProgram().useThis();
+            Renderer.render(picture1);
+            ((Model)picture2.getAttributeType(Attribute.Type.RENDER_MODEL)).getTexture().getShaderProgram().useThis();
+            Renderer.render(picture2);
+            ((Model)picture3.getAttributeType(Attribute.Type.RENDER_MODEL)).getTexture().getShaderProgram().useThis();
+            Renderer.render(picture3);
+            ((Model)picture4.getAttributeType(Attribute.Type.RENDER_MODEL)).getTexture().getShaderProgram().useThis();
+            Renderer.render(picture4);
             ShaderProgram.useNone();
 
             DisplayManager.updateDisplay();

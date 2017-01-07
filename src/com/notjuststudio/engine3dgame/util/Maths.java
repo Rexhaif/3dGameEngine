@@ -12,9 +12,11 @@ public class Maths {
     public static Matrix4f createTransformationMatrix(Vector3f position, Quaternion rotation, Vector3f scale) {
         Matrix4f result = new Matrix4f();
         result.setIdentity();
+
         Matrix4f.translate(position, result, result);
         Matrix4f.mul(result, createRotationMatrix(rotation), result);
         Matrix4f.scale(scale, result, result);
+
         return result;
     }
 
@@ -39,7 +41,68 @@ public class Maths {
 
     public static Quaternion createRotationQuaternion(float angle, Vector3f axis) {
         axis.normalise();
-        return new Quaternion(axis.getX()*(float)Math.sin(angle / 2),axis.getY()*(float)Math.sin(angle / 2),axis.getZ()*(float)Math.sin(angle / 2),
-                (float)Math.cos(angle/2));
+        return new Quaternion(axis.getX() * (float) Math.sin(angle / 2), axis.getY() * (float) Math.sin(angle / 2), axis.getZ() * (float) Math.sin(angle / 2),
+                (float) Math.cos(angle / 2));
+    }
+
+    public static Vector3f impactVectorByMatrix(Matrix4f matrix, Vector3f vector) {
+        Vector3f result = new Vector3f(0, 0, 0);
+        result.setX(matrix.m00 * vector.getX() + matrix.m01 * vector.getY() + matrix.m02 * vector.getZ());
+        result.setY(matrix.m10 * vector.getX() + matrix.m11 * vector.getY() + matrix.m12 * vector.getZ());
+        result.setZ(matrix.m20 * vector.getX() + matrix.m21 * vector.getY() + matrix.m22 * vector.getZ());
+        return result;
+    }
+
+    public static Vector3f impactVectorByQuaternion(Vector3f vector, Quaternion quaternion) {
+        Quaternion tmp = multiplicationVectorByQuaternion(vector, quaternion);
+        tmp = Quaternion.mul(invertQuaternion(quaternion), tmp, null);
+
+        Vector3f result = new Vector3f(0,0,0);
+
+        result.setX(tmp.getX());
+        result.setY(tmp.getY());
+        result.setZ(tmp.getZ());
+
+        return result;
+    }
+
+    public static Vector3f myMultiplication(Vector3f first, Vector3f second) {
+        return new Vector3f(first.getX() * second.getX(), first.getY() * second.getY(), first.getZ() * second.getZ());
+    }
+
+    public static Quaternion scaleQuaternion(Quaternion quaternion, float scale) {
+        quaternion.w *= scale;
+        quaternion.x *= scale;
+        quaternion.y *= scale;
+        quaternion.z *= scale;
+        return quaternion;
+    }
+
+    public static float lengthOfQuaternion(Quaternion quaternion) {
+        return quaternion.w*quaternion.w + quaternion.x*quaternion.x + quaternion.y*quaternion.y + quaternion.z*quaternion.z;
+    }
+
+    public static Quaternion invertQuaternion(Quaternion quaternion) {
+        Quaternion result = new Quaternion(0,0,0,0);
+        result.w = quaternion.w;
+        result.x = -quaternion.x;
+        result.y = -quaternion.y;
+        result.z = -quaternion.z;
+        return result;
+    }
+
+    public static Quaternion multiplicationVectorByQuaternion(Vector3f vector, Quaternion quaternion) {
+        return Quaternion.mul(quaternion, new Quaternion(vector.x, vector.y, vector.z, 0), null);
+    }
+
+    public static Quaternion multiplicationQuaternionByQuaternion(Quaternion first, Quaternion second) {
+        Quaternion result = new Quaternion(0,0,0,0);
+
+        result.w = first.w * second.w - first.x * second.x - first.y * second.y - first.z * second.z;
+        result.w = first.w * second.x + first.x * second.w + first.y * second.z - first.z * second.y;
+        result.w = first.w * second.y - first.x * second.z + first.y * second.w + first.z * second.x;
+        result.w = first.w * second.z + first.x * second.y - first.y * second.x + first.z * second.w;
+
+        return  result;
     }
 }

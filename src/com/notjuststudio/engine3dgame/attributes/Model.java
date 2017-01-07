@@ -24,4 +24,9 @@ public class Model extends Attribute{
     public ModelTexture getTexture() {
         return texture;
     }
+
+    @Override
+    public Attribute getCopy() {
+        return new Model(data, texture);
+    }
 }
