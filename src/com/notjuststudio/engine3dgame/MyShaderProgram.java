@@ -10,7 +10,9 @@ import org.lwjgl.util.vector.Matrix4f;
  */
 public class MyShaderProgram extends ShaderProgram {
 
-    private int location_transformation;
+    private int location_transformationMatrix;
+    private int location_projectionMatrix;
+    private int location_viewMatrix;
 
     public MyShaderProgram() {
         this(new ShadersBuilder().createDefaultContainer());
@@ -22,10 +24,20 @@ public class MyShaderProgram extends ShaderProgram {
 
     @Override
     protected void getAllUniformLocation() {
-        location_transformation = super.getUniformLocation("transformationMatrix");
+        location_transformationMatrix = super.getUniformLocation("transformationMatrix");
+        location_projectionMatrix = super.getUniformLocation("projectionMatrix");
+        location_viewMatrix = super.getUniformLocation("viewMatrix");
     }
 
     public void loadTransformationMatrix(Matrix4f matrix4f) {
-        super.loadMatrix(location_transformation, matrix4f);
+        super.loadMatrix(location_transformationMatrix, matrix4f);
+    }
+
+    public void loadProjectionMatrix(Matrix4f matrix4f) {
+        super.loadMatrix(location_projectionMatrix, matrix4f);
+    }
+
+    public void loadViewMatrix(Matrix4f matrix4f) {
+        super.loadMatrix(location_viewMatrix, matrix4f);
     }
 }

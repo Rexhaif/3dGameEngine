@@ -24,15 +24,16 @@ public class Loader {
     private static List<Integer> vboList = new ArrayList<>();
     private static List<Integer> textureList = new ArrayList<>();
 
-    public static ModelData createModelData(int[] indices, float[] positions, float[] uvCoords) {
-        return new ModelData(loadToVAO(indices, positions, uvCoords), indices.length);
+    public static ModelData createModelData(int[] indices, float[] positions, float[] uvCoords, float[] normals) {
+        return new ModelData(loadToVAO(indices, positions, uvCoords, normals), indices.length);
     }
 
-    private static int loadToVAO(int[] indices, float[] positions, float[] uvCoords) {
+    private static int loadToVAO(int[] indices, float[] positions, float[] uvCoords, float[] normals) {
         int vaoID = createVAO();
         storeDataInIndicesBuffer(indices);
         storeDataInAttributeList(0, 3, positions);
         storeDataInAttributeList(1, 2, uvCoords);
+        storeDataInAttributeList(2, 3, normals);
         bindDefaultVAO();
         return vaoID;
     }

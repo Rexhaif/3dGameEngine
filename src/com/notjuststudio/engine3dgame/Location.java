@@ -30,18 +30,20 @@ public class Location implements Cloneable{
 
     private List<Attribute> attributes = new ArrayList<>();
 
-    private Vector3f localPosition;
-    private Quaternion localAngle;
-    private Vector3f localScale;
+    private Vector3f position;
+    private Quaternion rotation;
+    private Vector3f scale;
 
-    private Vector3f position = null;
-    private Quaternion angle = null;
-    private Vector3f scale = null;
+    public Location() {
+        this.position = DEFAULT.position;
+        this.rotation = DEFAULT.rotation;
+        this.scale = DEFAULT.scale;
+    }
 
     public Location(Vector3f position, Quaternion angle, Vector3f scale) {
-        this.localPosition = position;
-        this.localAngle = angle;
-        this.localScale = scale;
+        this.position = position;
+        this.rotation = angle;
+        this.scale = scale;
     }
 
     public Location getParent() {
@@ -56,75 +58,75 @@ public class Location implements Cloneable{
         return attributes;
     }
 
-//    public Vector3f getPosition() {
-//        if (parent == null)
-//            return localPosition;
-//        //if (position == null)
-//            position = Vector3f.add(Maths.impactVectorByMatrix(Maths.createRotationMatrix(Maths.invertQuaternion(parent.getAngle())),Maths.myMultiplication(localPosition, parent.getScale())), parent.getPosition(), null);
-//        return position;
-//    }
-//
-//    public Quaternion getAngle() {
-//        if (parent == null)
-//            return localAngle;
-//        //if (angle == null)
-//            angle = Quaternion.mul(localAngle, parent.getAngle(), null);
-//        return angle;
-//    }
-//
-//    public Vector3f getScale() {
-//        if (parent == null)
-//            return localScale;
-//        //if (scale == null)
-//            scale = Maths.impactVectorByMatrix(Maths.createRotationMatrix(getAngle()),Maths.myMultiplication(parent.getScale(), localScale));
-//        return scale;
-//    }
-
     public Vector3f getLocalPosition() {
-        return localPosition;
+        return position;
     }
 
     public Quaternion getLocalAngle() {
-        return localAngle;
+        return rotation;
     }
 
     public Vector3f getLocalScale() {
-        return localScale;
+        return scale;
     }
 
     public Location setLocalPosition(Vector3f position) {
-        this.localPosition = position;
-        this.position = null;
+        this.position = position;
         return this;
     }
 
-    public Location setLocalAngle(Quaternion angle) {
-        this.localAngle = angle;
-        this.angle = null;
+    public Location setLocalPosition(float x, float y, float z) {
+        this.position = new Vector3f(x,y,z);
+        return this;
+    }
+
+    public Location setLocalAngle(Quaternion rotation) {
+        this.rotation = rotation;
+        return this;
+    }
+
+    public Location setLocalAngle(float angle, float x, float y, float z) {
+        this.rotation = Maths.createRotationQuaternion(angle, new Vector3f(x,y,z));
         return this;
     }
 
     public Location setLocalScale(Vector3f scale) {
-        this.localScale = scale;
-        this.scale = null;
+        this.scale = scale;
+        return this;
+    }
+
+    public Location setLocalScale(float x, float y, float z) {
+        this.scale = new Vector3f(x,y,z);
         return this;
     }
 
     public Location addLocalPosition(Vector3f position) {
-        this.localPosition = Vector3f.add(this.localPosition, position, null);
-        this.position = null;
+        this.position = Vector3f.add(this.position, position, null);
         return this;
     }
 
-    public Location addLocalAngle(Quaternion angle) {
-        this.localAngle = Quaternion.mul(angle, this.localAngle, null);
-        this.angle = null;
+    public Location addLocalPosition(float x, float y, float z) {
+        this.position = Vector3f.add(this.position, new Vector3f(x,y,z), null);
+        return this;
+    }
+
+    public Location addLocalAngle(Quaternion rotation) {
+        this.rotation = Quaternion.mul(rotation, this.rotation, null);
+        return this;
+    }
+
+    public Location addLocalAngle(float angle, float x, float y, float z) {
+        this.rotation = Quaternion.mul(Maths.createRotationQuaternion(angle, new Vector3f(x,y,z)), this.rotation, null);
         return this;
     }
 
     public Location addLocalScale(Vector3f scale) {
-        this.localScale = Maths.myMultiplication(this.localScale, scale);
-        this.scale = null;
+        this.scale = Maths.myMultiplication(this.scale, scale);
+        return this;
+    }
+
+    public Location addLocalScale(float x, float y, float z) {
+        this.scale = Maths.myMultiplication(this.scale, new Vector3f(x,y,z));
         return this;
     }
 
@@ -147,7 +149,7 @@ public class Location implements Cloneable{
     }
 
     public Location addAttribute(Attribute attribute) {
-        if (Attribute.SINGLTONE[attribute.getType().ordinal()] && hasAttributeType(attribute.getType()))
+        if (attribute.getType().SINGLTONE && hasAttributeType(attribute.getType()))
             return this;
         this.attributes.add(attribute);
         attribute.setLocation(this);
@@ -160,7 +162,7 @@ public class Location implements Cloneable{
         return this;
     }
 
-    public Attribute getAttributeType(Attribute.Type type) {
+    public Attribute getAttributeOfType(Attribute.Type type) {
         for (Attribute attribute : attributes) {
             if (attribute.getType() == type) {
                 return attribute;
@@ -188,8 +190,8 @@ public class Location implements Cloneable{
     private Matrix4f getTransformationMatrixWithoutTrans() {
         Matrix4f result = new Matrix4f();
         Matrix4f.setIdentity(result);
-        Matrix4f.mul(result, Maths.createRotationMatrix(localAngle), result);
-        Matrix4f.scale(localScale, result, result);
+        Matrix4f.mul(result, Maths.createRotationMatrix(rotation), result);
+        Matrix4f.scale(scale, result, result);
         if (parent == null)
             return result;
         return Matrix4f.mul(parent.getTransformationMatrixWithoutTrans(), result, null);
@@ -200,7 +202,7 @@ public class Location implements Cloneable{
     }
 
     private Vector3f getTranslation(Vector3f translation) {
-        Vector3f result = Vector3f.add(localPosition, Maths.impactVectorByMatrix(Maths.createRotationMatrix(Maths.invertQuaternion(localAngle)), Maths.myMultiplication(translation, localScale)), null);
+        Vector3f result = Vector3f.add(position, Maths.impactVectorByMatrix(Maths.createRotationMatrix(Maths.invertQuaternion(rotation)), Maths.myMultiplication(translation, scale)), null);
         if (parent == null)
             return result;
         return parent.getTranslation(result);

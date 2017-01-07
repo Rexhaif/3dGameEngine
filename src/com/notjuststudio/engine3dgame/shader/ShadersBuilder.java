@@ -14,9 +14,11 @@ public class ShadersBuilder {
                     "out vec2 uv;\n" +
                     "\n" +
                     "uniform mat4 transformationMatrix;\n" +
+                    "uniform mat4 projectionMatrix;\n" +
+                    "uniform mat4 viewMatrix;\n" +
                     "\n" +
                     "void main() {\n" +
-                    "  gl_Position = transformationMatrix * vec4(vertexPos,1.0);\n" +
+                    "  gl_Position = viewMatrix * projectionMatrix * transformationMatrix * vec4(vertexPos,1.0);\n" +
                     "  uv = vertexUv;\n" +
                     "}\n";
     private String geometryShaderExample =

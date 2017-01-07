@@ -1,5 +1,7 @@
 package com.notjuststudio.engine3dgame.util;
 
+import com.notjuststudio.engine3dgame.attributes.Attribute;
+import com.notjuststudio.engine3dgame.attributes.Camera;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;
 import org.lwjgl.util.vector.Vector3f;
@@ -16,6 +18,16 @@ public class Maths {
         Matrix4f.translate(position, result, result);
         Matrix4f.mul(result, createRotationMatrix(rotation), result);
         Matrix4f.scale(scale, result, result);
+
+        return result;
+    }
+
+    public static Matrix4f createViewMatrix(Camera camera) {
+        Matrix4f result = new Matrix4f();
+        result.setIdentity();
+
+        Matrix4f.mul(result, createRotationMatrix(camera.getLocation().getLocalAngle()), result);
+        Matrix4f.translate(camera.getLocation().getLocalPosition().negate(null), result, result);
 
         return result;
     }

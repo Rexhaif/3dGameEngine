@@ -9,8 +9,7 @@ import org.lwjgl.opengl.*;
  */
 public class DisplayManager {
 
-    private static int width = 1280;
-    private static int height = 720;
+    private static DisplayMode mode;
 
     private static long lastFrameTime;
     private static float delta;
@@ -20,14 +19,16 @@ public class DisplayManager {
         ContextAttribs attribs = new ContextAttribs(3,2).withForwardCompatible(true).withProfileCore(true);
 
         try {
-            Display.setDisplayMode(new DisplayMode(width, height));
+            mode = Display.getDesktopDisplayMode();
+            Display.setDisplayModeAndFullscreen(mode);
             Display.create(new PixelFormat(), attribs);
+            Display.setTitle("GAME OF THE YEAR");
 
         } catch (LWJGLException e) {
             e.printStackTrace();
         }
 
-        GL11.glViewport(0,0,width,height);
+        GL11.glViewport(0,0,mode.getWidth(),mode.getHeight());
         lastFrameTime = getCurrentTime();
     }
 
@@ -48,5 +49,13 @@ public class DisplayManager {
 
     public static long getCurrentTime() {
         return Sys.getTime() * 1000 /Sys.getTimerResolution();
+    }
+
+    public static int getWidth() {
+        return mode.getWidth();
+    }
+
+    public static int getHeight() {
+        return mode.getHeight();
     }
 }

@@ -11,7 +11,13 @@ public abstract class Attribute implements Cloneable {
     private Type type;
 
     public enum Type {
-        RENDER_MODEL
+        RENDER_MODEL (true),
+        CAMERA (true);
+        public final boolean SINGLTONE;
+
+        Type (boolean SINGLTONE) {
+            this.SINGLTONE = SINGLTONE;
+        }
     }
 
     public Attribute getCopy() {
@@ -23,9 +29,6 @@ public abstract class Attribute implements Cloneable {
         return null;
     }
 
-    public static final boolean[] SINGLTONE = {
-            true,
-    };
 
     public Attribute(Type type) {
         this.type = type;
@@ -33,6 +36,10 @@ public abstract class Attribute implements Cloneable {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 
     public Type getType() {
