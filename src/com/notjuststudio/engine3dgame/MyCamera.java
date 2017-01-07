@@ -2,18 +2,19 @@ package com.notjuststudio.engine3dgame;
 
 import com.notjuststudio.engine3dgame.attributes.Camera;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.util.vector.Quaternion;
-import org.lwjgl.util.vector.Vector3f;
 
 /**
  * Created by George on 07.01.2017.
  */
-public class MyCamera extends Location {
+public class MyCamera extends Keeper {
+
+    private Camera camera;
 
     public MyCamera() {
         super();
-        Camera camera = new Camera();
+        camera = new Camera();
         this.addAttribute(camera);
+        camera.resolveViewMatrix();
     }
 
     public void move() {
@@ -29,6 +30,8 @@ public class MyCamera extends Location {
         if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
             addLocalPosition(0, -0.1f * DisplayManager.getFrameTimeSeconds(), 0);
         }
+
+        camera.resolveViewMatrix();
     }
 
 }

@@ -1,7 +1,7 @@
 package com.notjuststudio.engine3dgame.colladaConverter;
 
 import com.notjuststudio.engine3dgame.Loader;
-import com.notjuststudio.engine3dgame.ModelData;
+import com.notjuststudio.engine3dgame.attributes.model.ModelData;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 

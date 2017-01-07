@@ -1,4 +1,4 @@
-package com.notjuststudio.engine3dgame;
+package com.notjuststudio.engine3dgame.attributes.model;
 
 /**
  * Created by George on 06.01.2017.

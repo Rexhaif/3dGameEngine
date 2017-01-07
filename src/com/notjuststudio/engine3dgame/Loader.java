@@ -1,5 +1,6 @@
 package com.notjuststudio.engine3dgame;
 
+import com.notjuststudio.engine3dgame.attributes.model.ModelData;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;

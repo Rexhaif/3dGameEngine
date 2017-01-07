@@ -1,6 +1,7 @@
 package com.notjuststudio.engine3dgame;
 
 import com.notjuststudio.engine3dgame.attributes.Attribute;
+import com.notjuststudio.engine3dgame.attributes.Model;
 import com.notjuststudio.engine3dgame.util.Maths;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;
@@ -12,21 +13,21 @@ import java.util.List;
 /**
  * Created by George on 06.01.2017.
  */
-public class Location implements Cloneable{
+public class Keeper implements Cloneable{
 
-    public static Location getDefault() {
+    public static Keeper getDefault() {
         try {
-            return (Location)DEFAULT.clone();
+            return (Keeper)DEFAULT.clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    private static final Location DEFAULT = new Location(new Vector3f(0,0,0), new Quaternion(0,0,0,1),new Vector3f(1,1,1));
+    private static final Keeper DEFAULT = new Keeper(new Vector3f(0,0,0), new Quaternion(0,0,0,1),new Vector3f(1,1,1));
 
-    private Location parent = null;
-    private List<Location> children = new ArrayList<>();
+    private Keeper parent = null;
+    private List<Keeper> children = new ArrayList<>();
 
     private List<Attribute> attributes = new ArrayList<>();
 
@@ -34,23 +35,23 @@ public class Location implements Cloneable{
     private Quaternion rotation;
     private Vector3f scale;
 
-    public Location() {
+    public Keeper() {
         this.position = DEFAULT.position;
         this.rotation = DEFAULT.rotation;
         this.scale = DEFAULT.scale;
     }
 
-    public Location(Vector3f position, Quaternion angle, Vector3f scale) {
+    public Keeper(Vector3f position, Quaternion angle, Vector3f scale) {
         this.position = position;
         this.rotation = angle;
         this.scale = scale;
     }
 
-    public Location getParent() {
+    public Keeper getParent() {
         return parent;
     }
 
-    public List<Location> getChildren() {
+    public List<Keeper> getChildren() {
         return children;
     }
 
@@ -70,72 +71,72 @@ public class Location implements Cloneable{
         return scale;
     }
 
-    public Location setLocalPosition(Vector3f position) {
+    public Keeper setLocalPosition(Vector3f position) {
         this.position = position;
         return this;
     }
 
-    public Location setLocalPosition(float x, float y, float z) {
+    public Keeper setLocalPosition(float x, float y, float z) {
         this.position = new Vector3f(x,y,z);
         return this;
     }
 
-    public Location setLocalAngle(Quaternion rotation) {
+    public Keeper setLocalAngle(Quaternion rotation) {
         this.rotation = rotation;
         return this;
     }
 
-    public Location setLocalAngle(float angle, float x, float y, float z) {
+    public Keeper setLocalAngle(float angle, float x, float y, float z) {
         this.rotation = Maths.createRotationQuaternion(angle, new Vector3f(x,y,z));
         return this;
     }
 
-    public Location setLocalScale(Vector3f scale) {
+    public Keeper setLocalScale(Vector3f scale) {
         this.scale = scale;
         return this;
     }
 
-    public Location setLocalScale(float x, float y, float z) {
+    public Keeper setLocalScale(float x, float y, float z) {
         this.scale = new Vector3f(x,y,z);
         return this;
     }
 
-    public Location addLocalPosition(Vector3f position) {
+    public Keeper addLocalPosition(Vector3f position) {
         this.position = Vector3f.add(this.position, position, null);
         return this;
     }
 
-    public Location addLocalPosition(float x, float y, float z) {
+    public Keeper addLocalPosition(float x, float y, float z) {
         this.position = Vector3f.add(this.position, new Vector3f(x,y,z), null);
         return this;
     }
 
-    public Location addLocalAngle(Quaternion rotation) {
+    public Keeper addLocalAngle(Quaternion rotation) {
         this.rotation = Quaternion.mul(rotation, this.rotation, null);
         return this;
     }
 
-    public Location addLocalAngle(float angle, float x, float y, float z) {
+    public Keeper addLocalAngle(float angle, float x, float y, float z) {
         this.rotation = Quaternion.mul(Maths.createRotationQuaternion(angle, new Vector3f(x,y,z)), this.rotation, null);
         return this;
     }
 
-    public Location addLocalScale(Vector3f scale) {
+    public Keeper addLocalScale(Vector3f scale) {
         this.scale = Maths.myMultiplication(this.scale, scale);
         return this;
     }
 
-    public Location addLocalScale(float x, float y, float z) {
+    public Keeper addLocalScale(float x, float y, float z) {
         this.scale = Maths.myMultiplication(this.scale, new Vector3f(x,y,z));
         return this;
     }
 
-    public Location setParent(Location parent) {
+    public Keeper setParent(Keeper parent) {
         parent.addChild(this);
         return this;
     }
 
-    public Location addChild(Location child) {
+    public Keeper addChild(Keeper child) {
         if (child == this)
             return this;
         this.children.add(child);
@@ -143,20 +144,23 @@ public class Location implements Cloneable{
         return this;
     }
 
-    public Location removeChild(Location child) {
+    public Keeper removeChild(Keeper child) {
         this.children.remove(child);
         return this;
     }
 
-    public Location addAttribute(Attribute attribute) {
+    public Keeper addAttribute(Attribute attribute) {
         if (attribute.getType().SINGLTONE && hasAttributeType(attribute.getType()))
             return this;
+        if (attribute.getType() == Attribute.Type.RENDER_MODEL){
+            ((Model)attribute).addToMap(this);
+        }
         this.attributes.add(attribute);
         attribute.setLocation(this);
         return this;
     }
 
-    public Location removeAttribute(Attribute attribute) {
+    public Keeper removeAttribute(Attribute attribute) {
         this.attributes.remove(attribute);
         attribute.setLocation(null);
         return this;

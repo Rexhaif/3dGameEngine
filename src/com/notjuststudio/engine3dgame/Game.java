@@ -1,10 +1,11 @@
 package com.notjuststudio.engine3dgame;
 
-import com.notjuststudio.engine3dgame.attributes.Attribute;
 import com.notjuststudio.engine3dgame.attributes.Light;
 import com.notjuststudio.engine3dgame.attributes.Model;
-import com.notjuststudio.engine3dgame.colladaConverter.COLLADA;
+import com.notjuststudio.engine3dgame.attributes.model.ModelData;
+import com.notjuststudio.engine3dgame.attributes.model.ModelTexture;
 import com.notjuststudio.engine3dgame.colladaConverter.COLLADAFileLoader;
+import com.notjuststudio.engine3dgame.render.MasterRenderer;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 import org.lwjgl.opengl.Display;
 
@@ -41,27 +42,25 @@ public class Game {
         ModelTexture texture = new ModelTexture(Loader.loadTexture("res/steam.png"), new MyShaderProgram()).setShineDamper(10).setReflectivity(1);
         Model model = new Model(boxModel, texture);
 
-        Location box = new Location().setLocalPosition(0,0,-5);
+        Keeper box = new Keeper().setLocalPosition(0,0,-5);
         box.addAttribute(model);
 
         MyCamera cameraKeeper = new MyCamera();
 
-        Location lamp = new Location().setLocalPosition(-5,5,-2.5f);
+        Keeper lamp = new Keeper().setLocalPosition(-5,5,-2.5f);
         Light light = new Light(1,1,1);
 
         lamp.addAttribute(light);
+
+        MasterRenderer.preload(light);
 
         while(!Display.isCloseRequested()) {
 
             cameraKeeper.move();
             box.addLocalAngle((float)Math.PI/4 * DisplayManager.getFrameTimeSeconds(), 1,1,0);
 
-            Renderer.prepare();
 
-            ((Model)box.getAttributeOfType(Attribute.Type.RENDER_MODEL)).getTexture().getShaderProgram().useThis();
-            Renderer.render(cameraKeeper,lamp,box);
-
-            ShaderProgram.useNone();
+            MasterRenderer.render();
 
             DisplayManager.updateDisplay();
         }

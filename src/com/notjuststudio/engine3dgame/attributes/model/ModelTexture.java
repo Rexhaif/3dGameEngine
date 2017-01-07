@@ -1,4 +1,4 @@
-package com.notjuststudio.engine3dgame;
+package com.notjuststudio.engine3dgame.attributes.model;
 
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 

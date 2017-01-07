@@ -1,13 +1,13 @@
 package com.notjuststudio.engine3dgame.attributes;
 
-import com.notjuststudio.engine3dgame.Location;
+import com.notjuststudio.engine3dgame.Keeper;
 
 /**
  * Created by George on 06.01.2017.
  */
 public abstract class Attribute implements Cloneable {
 
-    private Location location = null;
+    private Keeper location = null;
     private Type type;
 
     public enum Type {
@@ -35,11 +35,11 @@ public abstract class Attribute implements Cloneable {
         this.type = type;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(Keeper location) {
         this.location = location;
     }
 
-    public Location getLocation() {
+    public Keeper getKeeper() {
         return location;
     }
 
