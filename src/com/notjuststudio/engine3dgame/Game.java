@@ -5,9 +5,15 @@ import com.notjuststudio.engine3dgame.attributes.Model;
 import com.notjuststudio.engine3dgame.attributes.model.ModelData;
 import com.notjuststudio.engine3dgame.attributes.model.ModelTexture;
 import com.notjuststudio.engine3dgame.colladaConverter.COLLADAFileLoader;
+import com.notjuststudio.engine3dgame.osfConverter.OSFLoader;
+import com.notjuststudio.engine3dgame.osfConverter.VAOContainer;
 import com.notjuststudio.engine3dgame.render.MasterRenderer;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
+import com.notjuststudio.engine3dgame.shader.ShadersContainer;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
+
+import java.nio.FloatBuffer;
 
 /**
  * Created by George on 06.01.2017.
@@ -37,7 +43,17 @@ public class Game {
                 1, 1
         };
 
-        ModelData boxModel = COLLADAFileLoader.loadDAE("res/cube1.dae");
+        VAOContainer container = COLLADAFileLoader.loadDAEtoVAOContainer("res/cube1.dae");
+
+        OSFLoader.loadToOSF("res/cube.osf", container);
+
+        container = OSFLoader.loadFromOSF("res/cube.osf");
+        OSFLoader.loadToOSF("res/cube1.osf", container);
+
+        //System.out.println(OSFLoader.floatBufferToArray(container.getNormals())[2]);
+        //System.out.println(container.getIndices().remaining());
+
+        ModelData boxModel = Loader.createModelData(container);
 
         ModelTexture texture = new ModelTexture(Loader.loadTexture("res/steam.png"), new MyShaderProgram()).setShineDamper(10).setReflectivity(1);
         Model model = new Model(boxModel, texture);

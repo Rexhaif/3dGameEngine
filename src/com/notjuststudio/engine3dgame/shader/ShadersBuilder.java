@@ -90,7 +90,6 @@ public class ShadersBuilder {
                     "  float dampedFactor = pow(specularFactor, shineDamper);\n" +
                     "  vec3 finalSpecular = dampedFactor * lightColour;\n" +
                     "\n" +
-                    //"  out_Colour = ;\n" +
                     "  out_Colour = vec4(diffuse, 1.0) * texture(textureSampler, finalUV) + vec4(finalSpecular,1.0);\n" +
                     "}\n";
 
@@ -98,8 +97,9 @@ public class ShadersBuilder {
     private String geometryShader = "";
     private String fragmentShader = "";
 
-    private static final String VERSION = "#version ";
-    private static final String CORE = " core\n";
+    private boolean hasVertex = false;
+    private boolean hasGeometry = false;
+    private boolean hasFragment = false;
 
     public static final String NAME_VERTEX_POSITION = "vertexPos";
     public static final String NAME_VERTEX_UV = "vertexUv";
@@ -107,12 +107,18 @@ public class ShadersBuilder {
     private static final int LAYOUT_VERTEX_POSITION = 1;
     private static final int LAYOUT_VERTEX_UV = 1 << 1;
 
-    public ShadersBuilder addHeader(int version) {
-        String core_ver = VERSION + Integer.toString(version) + CORE;
-        vertexShader += core_ver;
-        geometryShader += core_ver;
-        fragmentShader += core_ver;
+    public ShadersBuilder setHeader(int version) {
+        this.version = version;
         return this;
+    }
+
+    private static final String VERSION = "#version ";
+    private static final String CORE = " core\n";
+
+    private int version;
+
+    private String makeHeader() {
+        return VERSION + Integer.toString(version) + CORE;
     }
 
     public ShadersBuilder addVertexInput(int type) {
@@ -126,7 +132,10 @@ public class ShadersBuilder {
     }
 
     public ShadersContainer createDefaultContainer() {
-        return new ShadersContainer(vertexShaderExample, geometryShaderExample, fragmentShaderExample);
+        return new ShadersContainer()
+                .setVertexShader(vertexShaderExample)
+                .setGeometryShader(geometryShaderExample)
+                .setFragmentShader(fragmentShaderExample);
     }
 
 }

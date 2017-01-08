@@ -2,6 +2,7 @@ package com.notjuststudio.engine3dgame.colladaConverter;
 
 import com.notjuststudio.engine3dgame.Loader;
 import com.notjuststudio.engine3dgame.attributes.model.ModelData;
+import com.notjuststudio.engine3dgame.osfConverter.VAOContainer;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -15,6 +16,16 @@ import java.util.List;
 public class COLLADAFileLoader {
 
 	public static ModelData loadDAE(String daeFileName) {
+		VaoContainer container = loadDAEtoVaoContainer(daeFileName);
+		return Loader.createModelData(container.indicesArray, container.verticesArray, container.texturesArray, container.normalsArray);
+	}
+
+	public static VAOContainer loadDAEtoVAOContainer(String daeFileName) {
+		VaoContainer container = loadDAEtoVaoContainer(daeFileName);
+		return Loader.createVAOContainer(container.indicesArray, container.verticesArray, container.texturesArray, container.normalsArray);
+	}
+
+	private static VaoContainer loadDAEtoVaoContainer(String daeFileName) {
 
         COLLADA collada = null;
 
@@ -83,7 +94,21 @@ public class COLLADAFileLoader {
 
 		int[] indicesArray = convertIndicesListToArray(indices);
 
-		return Loader.createModelData(indicesArray, verticesArray, texturesArray, normalsArray);
+		return new VaoContainer(indicesArray, verticesArray, texturesArray, normalsArray);
+	}
+
+	private static class VaoContainer {
+		int[] indicesArray;
+		float[] verticesArray;
+		float[] texturesArray;
+		float[] normalsArray;
+
+		VaoContainer(int[] indicesArray, float[] verticesArray, float[] texturesArray, float[] normalsArray) {
+			this.indicesArray = indicesArray;
+			this.verticesArray = verticesArray;
+			this.texturesArray = texturesArray;
+			this.normalsArray = normalsArray;
+		}
 	}
 
 	private static void processVertex(int[] vertex, List<Vertex> vertices, List<Integer> indices) {
