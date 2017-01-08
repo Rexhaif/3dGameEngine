@@ -46,12 +46,21 @@ public class Game {
         VAOContainer container = COLLADAFileLoader.loadDAEtoVAOContainer("res/cube1.dae");
 
         OSFLoader.loadToOSF("res/cube.osf", container);
+        System.out.println(OSFLoader.floatBufferToArray(container.getPositions())[0]);
 
         container = OSFLoader.loadFromOSF("res/cube.osf");
         OSFLoader.loadToOSF("res/cube1.osf", container);
+        System.out.println(OSFLoader.floatBufferToArray(container.getPositions())[0]);
 
-        //System.out.println(OSFLoader.floatBufferToArray(container.getNormals())[2]);
-        //System.out.println(container.getIndices().remaining());
+        container = OSFLoader.loadFromOSF("res/cube1.osf");
+        OSFLoader.loadToOSF("res/cube2.osf", container);
+        System.out.println(OSFLoader.floatBufferToArray(container.getPositions())[0]);
+
+        container = OSFLoader.loadFromOSF("res/cube2.osf");
+        OSFLoader.loadToOSF("res/cube3.osf", container);
+        System.out.println(OSFLoader.floatBufferToArray(container.getPositions())[0]);
+//
+//        container = OSFLoader.loadFromOSF("res/cube3.osf");
 
         ModelData boxModel = Loader.createModelData(container);
 
