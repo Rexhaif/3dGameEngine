@@ -11,7 +11,7 @@ public class OSFLoader {
     public static boolean loadToOSF(String fileName, VAOContainer source) {
         File file = new File(fileName);
         if (file.exists()) {
-        //    return false;
+            //    return false;
         }
 
         ByteBuffer byteBuffer;
@@ -42,6 +42,11 @@ public class OSFLoader {
 
         try {
             bw.write(charBufferToArray(byteBuffer.asCharBuffer()));
+            //System.out.println(floatBufferToArray(floatBufferToByteBuffer(source.getPositions()).asFloatBuffer())[0]);
+//            System.out.println(source.getPositions().remaining());
+//            System.out.println(source.getPositions().position());
+//            System.out.println(floatBufferToByteBuffer(source.getPositions()).remaining());
+//            System.out.println(floatBufferToByteBuffer(source.getPositions()).position());
             bw.write(charBufferToArray(floatBufferToByteBuffer(source.getPositions()).asCharBuffer()));
         } catch (IOException e) {
             e.printStackTrace();
@@ -105,10 +110,7 @@ public class OSFLoader {
             return null;
         }
 
-        System.out.println(inputBuffer.getInt());
-        inputBuffer.flip();
         inputBuffer = ByteBuffer.allocateDirect(inputBuffer.getInt() << 2).order(ByteOrder.nativeOrder());
-        System.out.println(inputBuffer.remaining());
 
         try {
             br.read(inputBuffer.asCharBuffer());
@@ -117,11 +119,12 @@ public class OSFLoader {
             return null;
         }
 
+        inputBuffer.position(0);
         saveBuffer = ByteBuffer.allocateDirect(inputBuffer.remaining()).order(ByteOrder.nativeOrder());
         saveBuffer.put(inputBuffer).flip();
         indices = saveBuffer.asIntBuffer();
 
-        inputBuffer = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
+        inputBuffer = ByteBuffer.allocateDirect(8).order(ByteOrder.nativeOrder());
         try {
             br.read(inputBuffer.asCharBuffer());
         } catch (IOException e) {
@@ -130,7 +133,12 @@ public class OSFLoader {
         }
 
         System.out.println(inputBuffer.getInt());
-        inputBuffer.flip();
+        System.out.println(inputBuffer.getFloat());
+        System.out.println(inputBuffer.position());
+        //inputBuffer.flip();
+        System.out.println(inputBuffer.position());
+        inputBuffer.position(0);
+        System.out.println(inputBuffer.position());
         inputBuffer = ByteBuffer.allocateDirect(inputBuffer.getInt() << 2).order(ByteOrder.nativeOrder());
 
         try {
@@ -139,6 +147,8 @@ public class OSFLoader {
             e.printStackTrace();
             return null;
         }
+        System.out.println(inputBuffer.getFloat());
+        inputBuffer.position(0);
         saveBuffer = ByteBuffer.allocateDirect(inputBuffer.remaining()).order(ByteOrder.nativeOrder());
         saveBuffer.put(inputBuffer).flip();
         positions = saveBuffer.asFloatBuffer();
@@ -160,6 +170,7 @@ public class OSFLoader {
             return null;
         }
 
+        inputBuffer.position(0);
         saveBuffer = ByteBuffer.allocateDirect(inputBuffer.remaining()).order(ByteOrder.nativeOrder());
         saveBuffer.put(inputBuffer).flip();
         uvCoords = saveBuffer.asFloatBuffer();
@@ -183,6 +194,7 @@ public class OSFLoader {
             return null;
         }
 
+        inputBuffer.position(0);
         saveBuffer = ByteBuffer.allocateDirect(inputBuffer.remaining()).order(ByteOrder.nativeOrder());
         saveBuffer.put(inputBuffer).flip();
         normals = saveBuffer.asFloatBuffer();
@@ -205,21 +217,21 @@ public class OSFLoader {
     public static float[] floatBufferToArray(FloatBuffer buffer) {
         float[] buffered = new float[buffer.remaining()];
         buffer.get(buffered);
-        buffer.flip();
+        buffer.position(0);
         return  buffered;
     }
 
     public static int[] intBufferToArray(IntBuffer buffer) {
         int[] buffered = new int[buffer.remaining()];
         buffer.get(buffered);
-        buffer.flip();
+        buffer.position(0);
         return  buffered;
     }
 
     public static char[] charBufferToArray(CharBuffer buffer) {
         char[] buffered = new char[buffer.remaining()];
         buffer.get(buffered);
-        buffer.flip();
+        buffer.position(0);
         return  buffered;
     }
 }
