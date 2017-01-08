@@ -11,11 +11,12 @@ public class OSFLoader {
     public static boolean loadToOSF(String fileName, VAOContainer source) {
         File file = new File(fileName);
         if (file.exists()) {
-            //    return false;
+            return false;
         }
 
         ByteBuffer byteBuffer;
         FileWriter fw;
+        int tmp;
         try {
             fw = new FileWriter(file);
         } catch (IOException e) {
@@ -36,24 +37,19 @@ public class OSFLoader {
             return false;
         }
 
-        byteBuffer = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
+        byteBuffer.position(0);
         byteBuffer.putInt(source.getPositions().remaining());
         byteBuffer.flip();
 
         try {
             bw.write(charBufferToArray(byteBuffer.asCharBuffer()));
-            //System.out.println(floatBufferToArray(floatBufferToByteBuffer(source.getPositions()).asFloatBuffer())[0]);
-//            System.out.println(source.getPositions().remaining());
-//            System.out.println(source.getPositions().position());
-//            System.out.println(floatBufferToByteBuffer(source.getPositions()).remaining());
-//            System.out.println(floatBufferToByteBuffer(source.getPositions()).position());
             bw.write(charBufferToArray(floatBufferToByteBuffer(source.getPositions()).asCharBuffer()));
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
 
-        byteBuffer = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
+        byteBuffer.position(0);
         byteBuffer.putInt(source.getUvCoords().remaining());
         byteBuffer.flip();
 
@@ -65,12 +61,12 @@ public class OSFLoader {
             return false;
         }
 
-        byteBuffer = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
+        byteBuffer.position(0);
         byteBuffer.putInt(source.getNormals().remaining());
         byteBuffer.flip();
 
         try {
-            bw.write(charBufferToArray(byteBuffer.asCharBuffer()));
+            bw.write(String.valueOf(charBufferToArray(byteBuffer.asCharBuffer())));
             bw.write(charBufferToArray(floatBufferToByteBuffer(source.getNormals()).asCharBuffer()));
             bw.close();
             fw.close();
@@ -124,7 +120,8 @@ public class OSFLoader {
         saveBuffer.put(inputBuffer).flip();
         indices = saveBuffer.asIntBuffer();
 
-        inputBuffer = ByteBuffer.allocateDirect(8).order(ByteOrder.nativeOrder());
+        inputBuffer = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
+
         try {
             br.read(inputBuffer.asCharBuffer());
         } catch (IOException e) {
@@ -132,13 +129,6 @@ public class OSFLoader {
             return null;
         }
 
-        System.out.println(inputBuffer.getInt());
-        System.out.println(inputBuffer.getFloat());
-        System.out.println(inputBuffer.position());
-        //inputBuffer.flip();
-        System.out.println(inputBuffer.position());
-        inputBuffer.position(0);
-        System.out.println(inputBuffer.position());
         inputBuffer = ByteBuffer.allocateDirect(inputBuffer.getInt() << 2).order(ByteOrder.nativeOrder());
 
         try {
@@ -147,7 +137,7 @@ public class OSFLoader {
             e.printStackTrace();
             return null;
         }
-        System.out.println(inputBuffer.getFloat());
+
         inputBuffer.position(0);
         saveBuffer = ByteBuffer.allocateDirect(inputBuffer.remaining()).order(ByteOrder.nativeOrder());
         saveBuffer.put(inputBuffer).flip();
@@ -203,7 +193,7 @@ public class OSFLoader {
     }
 
     public static ByteBuffer floatBufferToByteBuffer(FloatBuffer floatBuffer) {
-        ByteBuffer bb = ByteBuffer.allocate(floatBuffer.remaining() << 2);
+        ByteBuffer bb = ByteBuffer.allocateDirect(floatBuffer.remaining() << 2).order(ByteOrder.nativeOrder());
         bb.asFloatBuffer().put(floatBufferToArray(floatBuffer));
         return bb;
     }

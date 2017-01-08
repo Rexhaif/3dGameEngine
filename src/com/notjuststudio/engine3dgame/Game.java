@@ -13,6 +13,8 @@ import com.notjuststudio.engine3dgame.shader.ShadersContainer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 /**
@@ -46,21 +48,8 @@ public class Game {
         VAOContainer container = COLLADAFileLoader.loadDAEtoVAOContainer("res/cube1.dae");
 
         OSFLoader.loadToOSF("res/cube.osf", container);
-        System.out.println(OSFLoader.floatBufferToArray(container.getPositions())[0]);
 
         container = OSFLoader.loadFromOSF("res/cube.osf");
-        OSFLoader.loadToOSF("res/cube1.osf", container);
-        System.out.println(OSFLoader.floatBufferToArray(container.getPositions())[0]);
-
-        container = OSFLoader.loadFromOSF("res/cube1.osf");
-        OSFLoader.loadToOSF("res/cube2.osf", container);
-        System.out.println(OSFLoader.floatBufferToArray(container.getPositions())[0]);
-
-        container = OSFLoader.loadFromOSF("res/cube2.osf");
-        OSFLoader.loadToOSF("res/cube3.osf", container);
-        System.out.println(OSFLoader.floatBufferToArray(container.getPositions())[0]);
-//
-//        container = OSFLoader.loadFromOSF("res/cube3.osf");
 
         ModelData boxModel = Loader.createModelData(container);
 
