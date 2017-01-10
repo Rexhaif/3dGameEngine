@@ -52,39 +52,25 @@ public class Game {
 
         int side = 25;
         float delta = 3f;
-        float centerZ = -175;
-
-        Entity box = new Entity().setLocalRotation(-(float)Math.PI/4, 0,0,1);
-        Entity boxScaler = new Entity().setLocalScale(1,0.25f,(float)Math.sqrt(2)).addChild(box);
-        Entity boxRotator = new Entity().setLocalRotation((float)Math.PI/2, 1,0,0).addChild(boxScaler);
-        Entity boxPosition = new Entity().setLocalPosition(0,0,centerZ).addChild(boxRotator);
-
-        for (int i = 0; i < side; i++) {
-            for (int j = 0; j < side; j++) {
-                for (int k = 0; k < side; k++) {
-                    box.addChild(new Entity().setLocalPosition(
-                            -delta * ((float) (side - 1) / 2) + i * delta,
-                            -delta * ((float) (side - 1) / 2) + j * delta,
-                            -delta * ((float) (side - 1) / 2) + k * delta
-                    ).addAttribute(model));
-                }
-            }
-        }
+        float centerZ = -100;
 
         MyCamera cameraKeeper = new MyCamera();
+
+        Entity box = new Entity().setLocalPosition(20,37,-100).setLocalScale(1,1,1).addAttribute(model);
 
         Entity lamp = new Entity().setLocalPosition(-5,5,-2.5f);
         Light light = new Light(1,1,1);
 
         lamp.addAttribute(light);
 
+        SkyboxShader skyboxShader = new SkyboxShader();
+
         MasterRenderer.preload(light);
+        MasterRenderer.setSkybox(Loader.loadCubeMap("res/skybox/"), skyboxShader);
 
         while(!Display.isCloseRequested()) {
 
             cameraKeeper.move();
-            boxScaler.addLocalRotation(-(float) Math.PI * 4 * DisplayManager.getFrameTimeSeconds(), 0,1,0);
-            boxPosition.addLocalRotation(-(float) Math.PI /4 * DisplayManager.getFrameTimeSeconds(), 1,1,0);
 
             MasterRenderer.render();
 

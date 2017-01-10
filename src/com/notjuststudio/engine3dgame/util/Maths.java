@@ -54,34 +54,11 @@ public class Maths {
         return result;
     }
 
-    public static Vector3f impactVectorByQuaternion(Vector3f vector, Quaternion quaternion) {
-        Quaternion tmp = multiplicationVectorByQuaternion(vector, quaternion);
-        tmp = Quaternion.mul(invertQuaternion(quaternion), tmp, null);
-
-        Vector3f result = new Vector3f(0,0,0);
-
-        result.setX(tmp.getX());
-        result.setY(tmp.getY());
-        result.setZ(tmp.getZ());
-
-        return result;
-    }
 
     public static Vector3f myMultiplication(Vector3f first, Vector3f second) {
         return new Vector3f(first.getX() * second.getX(), first.getY() * second.getY(), first.getZ() * second.getZ());
     }
 
-    public static Quaternion scaleQuaternion(Quaternion quaternion, float scale) {
-        quaternion.w *= scale;
-        quaternion.x *= scale;
-        quaternion.y *= scale;
-        quaternion.z *= scale;
-        return quaternion;
-    }
-
-    public static float lengthOfQuaternion(Quaternion quaternion) {
-        return quaternion.w*quaternion.w + quaternion.x*quaternion.x + quaternion.y*quaternion.y + quaternion.z*quaternion.z;
-    }
 
     public static Quaternion invertQuaternion(Quaternion quaternion) {
         Quaternion result = new Quaternion(0,0,0,0);
@@ -92,18 +69,4 @@ public class Maths {
         return result;
     }
 
-    public static Quaternion multiplicationVectorByQuaternion(Vector3f vector, Quaternion quaternion) {
-        return Quaternion.mul(quaternion, new Quaternion(vector.x, vector.y, vector.z, 0), null);
-    }
-
-    public static Quaternion multiplicationQuaternionByQuaternion(Quaternion first, Quaternion second) {
-        Quaternion result = new Quaternion(0,0,0,0);
-
-        result.w = first.w * second.w - first.x * second.x - first.y * second.y - first.z * second.z;
-        result.w = first.w * second.x + first.x * second.w + first.y * second.z - first.z * second.y;
-        result.w = first.w * second.y - first.x * second.z + first.y * second.w + first.z * second.x;
-        result.w = first.w * second.z + first.x * second.y - first.y * second.x + first.z * second.w;
-
-        return  result;
-    }
 }

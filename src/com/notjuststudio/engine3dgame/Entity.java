@@ -59,11 +59,45 @@ public class Entity implements Cloneable{
         return attributes;
     }
 
+    public Vector3f getWorldPosition() {
+        return getTranslation();
+    }
+
+    public Quaternion getWorldRotation() {
+        if (parent == null)
+            return rotation;
+        return Quaternion.mul(parent.getWorldRotation(), rotation, null);
+    }
+
+    public Vector3f getFront() {
+        return Maths.impactVectorByMatrix(Maths.createRotationMatrix(getWorldRotation()), new Vector3f(0,0,-1));
+    }
+
+    public Vector3f getRight() {
+        return Maths.impactVectorByMatrix(Maths.createRotationMatrix(getWorldRotation()), new Vector3f(1,0,0));
+    }
+
+    public Vector3f getTop() {
+        return Maths.impactVectorByMatrix(Maths.createRotationMatrix(getWorldRotation()), new Vector3f(0,1,0));
+    }
+
+    public Vector3f getBack() {
+        return Maths.impactVectorByMatrix(Maths.createRotationMatrix(getWorldRotation()), new Vector3f(0,0,1));
+    }
+
+    public Vector3f getLeft() {
+        return Maths.impactVectorByMatrix(Maths.createRotationMatrix(getWorldRotation()), new Vector3f(-1,0,0));
+    }
+
+    public Vector3f getBottom() {
+        return Maths.impactVectorByMatrix(Maths.createRotationMatrix(getWorldRotation()), new Vector3f(0,-1,0));
+    }
+
     public Vector3f getLocalPosition() {
         return position;
     }
 
-    public Quaternion getLocalAngle() {
+    public Quaternion getLocalRotation() {
         return rotation;
     }
 
@@ -83,6 +117,11 @@ public class Entity implements Cloneable{
 
     public Entity setLocalRotation(Quaternion rotation) {
         this.rotation = rotation;
+        return this;
+    }
+
+    public Entity setLocalRotation(float angle, Vector3f axis) {
+        this.rotation = Maths.createRotationQuaternion(angle, axis);
         return this;
     }
 
@@ -115,6 +154,12 @@ public class Entity implements Cloneable{
         this.rotation = Quaternion.mul(rotation, this.rotation, null);
         return this;
     }
+
+    public Entity addLocalRotation(float angle, Vector3f axis) {
+        this.rotation = Quaternion.mul(Maths.createRotationQuaternion(angle, axis), this.rotation, null);
+        return this;
+    }
+
 
     public Entity addLocalRotation(float angle, float x, float y, float z) {
         this.rotation = Quaternion.mul(Maths.createRotationQuaternion(angle, new Vector3f(x,y,z)), this.rotation, null);
@@ -213,9 +258,7 @@ public class Entity implements Cloneable{
 
     private Matrix4f getTransformationMatrixWithoutTrans() {
         Matrix4f result = new Matrix4f();
-        Matrix4f.setIdentity(result);
-        Matrix4f.mul(result, Maths.createRotationMatrix(rotation), result);
-        Matrix4f.scale(scale, result, result);
+        Matrix4f.scale(scale, Maths.createRotationMatrix(rotation), result);
         if (parent == null)
             return result;
         return Matrix4f.mul(parent.getTransformationMatrixWithoutTrans(), result, null);

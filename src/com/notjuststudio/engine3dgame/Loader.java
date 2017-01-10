@@ -2,6 +2,7 @@ package com.notjuststudio.engine3dgame;
 
 import com.notjuststudio.engine3dgame.attributes.model.ModelData;
 import com.notjuststudio.engine3dgame.osfConverter.VAOContainer;
+import de.matthiasmann.twl.utils.PNGDecoder;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 import org.newdawn.slick.opengl.Texture;
@@ -9,6 +10,7 @@ import org.newdawn.slick.opengl.TextureLoader;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
@@ -40,6 +42,58 @@ public class Loader {
         return new ModelData(loadToVAO(container), container.getIndices().remaining());
     }
 
+    public static int createCubeMap(float size) {
+        int vaoID = createVAO();
+        float[] data = {
+                -size,  size, -size,
+                -size, -size, -size,
+                size, -size, -size,
+                size, -size, -size,
+                size,  size, -size,
+                -size,  size, -size,
+
+                -size, -size,  size,
+                -size, -size, -size,
+                -size,  size, -size,
+                -size,  size, -size,
+                -size,  size,  size,
+                -size, -size,  size,
+
+                size, -size, -size,
+                size, -size,  size,
+                size,  size,  size,
+                size,  size,  size,
+                size,  size, -size,
+                size, -size, -size,
+
+                -size, -size,  size,
+                -size,  size,  size,
+                size,  size,  size,
+                size,  size,  size,
+                size, -size,  size,
+                -size, -size,  size,
+
+                -size,  size, -size,
+                size,  size, -size,
+                size,  size,  size,
+                size,  size,  size,
+                -size,  size,  size,
+                -size,  size, -size,
+
+                -size, -size, -size,
+                -size, -size,  size,
+                size, -size, -size,
+                size, -size, -size,
+                -size, -size,  size,
+                size, -size,  size
+        };
+        List<Integer> vboIDs = new ArrayList<>();
+        vboIDs.add(storeDataInAttributeList(0, 3, storeDataInFloatBuffer(data)));
+        bindDefaultVAO();
+        vaoList.put(vaoID, vboIDs);
+        return vaoID;
+    }
+
     private static int loadToVAO(VAOContainer container) {
         int vaoID = createVAO();
         List<Integer> vboIDs = new ArrayList<>();
@@ -52,24 +106,91 @@ public class Loader {
         return vaoID;
     }
 
-    public static int loadTexture(String fileName) {
-        Texture texture = null;
-        try {
-            texture = TextureLoader.getTexture("PNG", new FileInputStream(fileName));
-            GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0);
-            if (anisotropicFilter) {
-                float amount  = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-                GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, amount);
+    private static CubeMapData decodeTexturesFile(String folderName) {
+        int width = 0;
+        int height = 0;
+        ByteBuffer[] buffers = new ByteBuffer[6];
+        final String[] TEXTURE_FILES = {"right.png", "left.png", "top.png", "bottom.png", "back.png", "front.png"};
+        for (int i = 0; i < 6; i++) {
+            try {
+                FileInputStream in = new FileInputStream(folderName + TEXTURE_FILES[i]);
+                PNGDecoder decoder = new PNGDecoder(in);
+                width = decoder.getWidth();
+                height = decoder.getHeight();
+                buffers[i] = ByteBuffer.allocateDirect(4 * width * height);
+                decoder.decode(buffers[i], width * 4, PNGDecoder.Format.RGBA);
+                buffers[i].flip();
+                in.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Tried to load texture " + folderName + TEXTURE_FILES[i] + ", didn't work");
+                System.exit(-1);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        int textureID = texture.getTextureID();
-        textureList.add(textureID);
-        return textureID;
+        return new CubeMapData(buffers, width, height);
+    }
+
+    public static int loadCubeMap(String folderName) {
+        int texID = GL11.glGenTextures();
+        GL13.glActiveTexture(texID);
+        GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texID);
+
+        CubeMapData data = decodeTexturesFile(folderName);
+        for (int i = 0; i < 6; i++) {
+            GL11.glTexImage2D(GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL11.GL_RGBA, data.getWidth(), data.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data.getBuffers()[i]);
+        }
+
+        GL30.glGenerateMipmap(GL13.GL_TEXTURE_CUBE_MAP);
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+
+        textureList.add(texID);
+        return texID;
+    }
+
+    private static TextureData decodeTextureFile(String fileName) {
+        int width = 0;
+        int height = 0;
+        ByteBuffer buffer = null;
+        try {
+            FileInputStream in = new FileInputStream(fileName);
+            PNGDecoder decoder = new PNGDecoder(in);
+            width = decoder.getWidth();
+            height = decoder.getHeight();
+            buffer = ByteBuffer.allocateDirect(4 * width * height);
+            decoder.decode(buffer, width * 4, PNGDecoder.Format.RGBA);
+            buffer.flip();
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Tried to load texture " + fileName + ", didn't work");
+            System.exit(-1);
+        }
+        return new TextureData(buffer, width, height);
+    }
+
+    public static int loadTexture(String fileName) {
+        int texID = GL11.glGenTextures();
+        GL13.glActiveTexture(texID);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
+
+        TextureData data = decodeTextureFile(fileName);
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, data.getWidth(), data.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data.getBuffer());
+
+        GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0);
+        if (anisotropicFilter) {
+            float amount  = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+            GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, amount);
+        }
+
+        textureList.add(texID);
+        return texID;
     }
 
     public static void cleanUp() {

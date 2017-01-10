@@ -73,12 +73,14 @@ public class Camera extends Attribute{
     }
 
     public void resolveViewMatrix() {
-        viewMatrix.setIdentity();
+        Matrix4f result = new Matrix4f();
+         Matrix4f.setIdentity(result);
 
         Entity entity = getEntity();
 
-        Matrix4f.mul(viewMatrix, Maths.createRotationMatrix(entity.getLocalAngle()), viewMatrix);
-        Matrix4f.translate(entity.getLocalPosition().negate(null), viewMatrix, viewMatrix);
+        Matrix4f.translate(entity.getLocalPosition().negate(null), result, result);
+        Matrix4f.mul(result, Maths.createRotationMatrix(entity.getLocalRotation()), result);
+        viewMatrix = result;
     }
 
     public static void setMainCameraIndex(int index) {
@@ -100,5 +102,12 @@ public class Camera extends Attribute{
             mainIndex = 0;
         }
         allCameras.remove(this);
+    }
+
+    @Override
+    public Attribute setEntity(Entity entity) {
+        super.setEntity(entity);
+        resolveViewMatrix();
+        return this;
     }
 }

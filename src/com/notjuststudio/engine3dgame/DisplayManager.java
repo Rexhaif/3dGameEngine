@@ -22,9 +22,9 @@ public class DisplayManager {
             mode = Display.getDesktopDisplayMode();
             Display.setDisplayMode(mode);
             Display.setFullscreen(true);
-            Display.create(new PixelFormat()/*.withSamples(4)*/, attribs);
+            Display.create(new PixelFormat().withSamples(4), attribs);
             Display.setTitle("GAME OF THE YEAR");
-            //GL11.glEnable(GL13.GL_MULTISAMPLE);
+            GL11.glEnable(GL13.GL_MULTISAMPLE);
         } catch (LWJGLException e) {
             e.printStackTrace();
         }

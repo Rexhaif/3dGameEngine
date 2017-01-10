@@ -21,11 +21,7 @@ public class MyShaderProgram extends ShaderProgram {
     private int location_reflectivity;
 
     public MyShaderProgram() {
-        this(new ShadersBuilder().createDefaultContainer());
-    }
-
-    private MyShaderProgram(ShadersContainer container) {
-        super(container);
+        super(ShadersBuilder.createDefaultContainer());
     }
 
     @Override

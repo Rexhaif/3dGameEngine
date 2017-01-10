@@ -19,16 +19,22 @@ public class MyCamera extends Entity {
 
     public void move() {
         if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-            addLocalPosition(0.1f * DisplayManager.getFrameTimeSeconds(), 0, 0);
+            addLocalRotation(-(float)Math.PI/4 * DisplayManager.getFrameTimeSeconds(), getTop());
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-            addLocalPosition(-0.1f * DisplayManager.getFrameTimeSeconds(), 0, 0);
+            addLocalRotation((float)Math.PI/4  * DisplayManager.getFrameTimeSeconds(), getTop());
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-            addLocalPosition(0, 0.1f * DisplayManager.getFrameTimeSeconds(), 0);
+            addLocalRotation((float)Math.PI/4  * DisplayManager.getFrameTimeSeconds(), getRight());
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-            addLocalPosition(0, -0.1f * DisplayManager.getFrameTimeSeconds(), 0);
+            addLocalRotation(-(float)Math.PI/4  * DisplayManager.getFrameTimeSeconds(), getRight());
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
+            addLocalRotation(-(float)Math.PI/4  * DisplayManager.getFrameTimeSeconds(), getFront());
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_E)) {
+            addLocalRotation((float)Math.PI/4  * DisplayManager.getFrameTimeSeconds(), getFront());
         }
 
         camera.resolveViewMatrix();
