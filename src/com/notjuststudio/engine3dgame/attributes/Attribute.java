@@ -1,14 +1,14 @@
 package com.notjuststudio.engine3dgame.attributes;
 
-import com.notjuststudio.engine3dgame.Keeper;
+import com.notjuststudio.engine3dgame.Entity;
 
 /**
  * Created by George on 06.01.2017.
  */
 public abstract class Attribute implements Cloneable {
 
-    private Keeper location = null;
-    private Type type;
+    protected Entity entity = null;
+    protected Type type;
 
     public enum Type {
         RENDER_MODEL (true),
@@ -30,17 +30,25 @@ public abstract class Attribute implements Cloneable {
         return null;
     }
 
+    public void delete() {
+        entity.getAttributes().remove(this);
+        entity = null;
+    };
 
-    public Attribute(Type type) {
+    protected Attribute(Type type) {
         this.type = type;
     }
 
-    public void setLocation(Keeper location) {
-        this.location = location;
+    public Attribute setEntity(Entity entity) {
+        if (!entity.getAttributes().contains(this)) {
+            entity.getAttributes().add(this);
+        }
+        this.entity = entity;
+        return this;
     }
 
-    public Keeper getKeeper() {
-        return location;
+    public Entity getEntity() {
+        return entity;
     }
 
     public Type getType() {

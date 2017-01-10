@@ -1,6 +1,6 @@
 package com.notjuststudio.engine3dgame.attributes;
 
-import com.notjuststudio.engine3dgame.Keeper;
+import com.notjuststudio.engine3dgame.Entity;
 import com.notjuststudio.engine3dgame.util.Maths;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
@@ -75,10 +75,10 @@ public class Camera extends Attribute{
     public void resolveViewMatrix() {
         viewMatrix.setIdentity();
 
-        Keeper keeper = getKeeper();
+        Entity entity = getEntity();
 
-        Matrix4f.mul(viewMatrix, Maths.createRotationMatrix(keeper.getLocalAngle()), viewMatrix);
-        Matrix4f.translate(keeper.getLocalPosition().negate(null), viewMatrix, viewMatrix);
+        Matrix4f.mul(viewMatrix, Maths.createRotationMatrix(entity.getLocalAngle()), viewMatrix);
+        Matrix4f.translate(entity.getLocalPosition().negate(null), viewMatrix, viewMatrix);
     }
 
     public static void setMainCameraIndex(int index) {
@@ -91,5 +91,14 @@ public class Camera extends Attribute{
 
     public static Camera getMainCamera() {
         return allCameras.get(mainIndex);
+    }
+
+    @Override
+    public void delete() {
+        super.delete();
+        if (allCameras.indexOf(this) == mainIndex) {
+            mainIndex = 0;
+        }
+        allCameras.remove(this);
     }
 }

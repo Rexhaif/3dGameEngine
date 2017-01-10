@@ -57,7 +57,7 @@ public class MyShaderProgram extends ShaderProgram {
     }
 
     public void loadLight(Light light) {
-        super.loadVector(location_lightPosition, light.getKeeper().getLocalPosition());
+        super.loadVector(location_lightPosition, light.getEntity().getLocalPosition());
         super.loadVector(location_lightColour, light.getColour());
     }
 }

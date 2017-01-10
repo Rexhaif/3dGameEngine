@@ -3,10 +3,7 @@ package com.notjuststudio.engine3dgame;
 import com.notjuststudio.engine3dgame.attributes.model.ModelData;
 import com.notjuststudio.engine3dgame.osfConverter.VAOContainer;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.*;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
@@ -14,17 +11,22 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by George on 06.01.2017.
  */
 public class Loader {
 
-    private static List<Integer> vaoList = new ArrayList<>();
-    private static List<Integer> vboList = new ArrayList<>();
-    private static List<Integer> textureList = new ArrayList<>();
+    private static boolean anisotropicFilter;
+
+    static {
+        if (!(anisotropicFilter = GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic))
+            System.out.println("Anisotropic filter is not supported!");
+    }
+
+    private static Map<Integer, List<Integer>> vaoList = new HashMap<>(); //если что, можно учитывать, что одно vbo может быть испольно раличными vao
+    private static Set<Integer> textureList = new HashSet<>();
 
     public static VAOContainer createVAOContainer(int[] indices, float[] positions, float[] uvCoords, float[] normals) {
         return new VAOContainer(
@@ -40,25 +42,13 @@ public class Loader {
 
     private static int loadToVAO(VAOContainer container) {
         int vaoID = createVAO();
-        storeDataInIndicesBuffer(container.getIndices());
-        storeDataInAttributeList(0, 3, container.getPositions());
-        storeDataInAttributeList(1, 2, container.getUvCoords());
-        storeDataInAttributeList(2, 3, container.getNormals());
+        List<Integer> vboIDs = new ArrayList<>();
+        vboIDs.add(storeDataInIndicesBuffer(container.getIndices()));
+        vboIDs.add(storeDataInAttributeList(0, 3, container.getPositions()));
+        vboIDs.add(storeDataInAttributeList(1, 2, container.getUvCoords()));
+        vboIDs.add(storeDataInAttributeList(2, 3, container.getNormals()));
         bindDefaultVAO();
-        return vaoID;
-    }
-
-    public static ModelData createModelData(int[] indices, float[] positions, float[] uvCoords, float[] normals) {
-        return new ModelData(loadToVAO(indices, positions, uvCoords, normals), indices.length);
-    }
-
-    private static int loadToVAO(int[] indices, float[] positions, float[] uvCoords, float[] normals) {
-        int vaoID = createVAO();
-        storeDataInIndicesBuffer(indices);
-        storeDataInAttributeList(0, 3, positions);
-        storeDataInAttributeList(1, 2, uvCoords);
-        storeDataInAttributeList(2, 3, normals);
-        bindDefaultVAO();
+        vaoList.put(vaoID, vboIDs);
         return vaoID;
     }
 
@@ -66,6 +56,14 @@ public class Loader {
         Texture texture = null;
         try {
             texture = TextureLoader.getTexture("PNG", new FileInputStream(fileName));
+            GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0);
+            if (anisotropicFilter) {
+                float amount  = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+                GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, amount);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -75,39 +73,39 @@ public class Loader {
     }
 
     public static void cleanUp() {
-        vaoList.forEach(GL30::glDeleteVertexArrays);
-        vboList.forEach(GL15::glDeleteBuffers);
+        for (Map.Entry<Integer, List<Integer>> vaoEntry : vaoList.entrySet()) {
+            GL30.glDeleteVertexArrays(vaoEntry.getKey());
+            for (Integer vboID : vaoEntry.getValue()) {
+                GL15.glDeleteBuffers(vboID);
+            }
+        }
         textureList.forEach(GL11::glDeleteTextures);
     }
 
     private static int createVAO() {
         int vaoID = GL30.glGenVertexArrays();
-        vaoList.add(vaoID);
         GL30.glBindVertexArray(vaoID);
         return vaoID;
     }
 
-    private static void storeDataInAttributeList(int attributeNumber, int size, FloatBuffer data) {
+    private static int storeDataInAttributeList(int attributeNumber, int size, FloatBuffer data) {
         int vboID = GL15.glGenBuffers();
-        vboList.add(vboID);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, data, GL15.GL_STATIC_DRAW);
         GL20.glVertexAttribPointer(attributeNumber, size, GL11.GL_FLOAT, false, 0, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-    }
-
-    private static void storeDataInAttributeList(int attributeNumber, int size, float[] data) {
-        storeDataInAttributeList(attributeNumber, size, storeDataInFloatBuffer(data));
+        return vboID;
     }
 
     public static void bindDefaultVAO() {
         GL30.glBindVertexArray(0);
     }
 
-    private static void storeDataInIndicesBuffer(IntBuffer indices) {
+    private static int storeDataInIndicesBuffer(IntBuffer indices) {
         int vboID = GL15.glGenBuffers();
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboID);
         GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indices, GL15.GL_STATIC_DRAW);
+        return vboID;
     }
 
     private static void storeDataInIndicesBuffer(int[] indices) {
@@ -115,11 +113,23 @@ public class Loader {
     }
 
     public static FloatBuffer storeDataInFloatBuffer(float[] data) {
-        return (FloatBuffer)BufferUtils.createFloatBuffer(data.length).put(data).flip();
+        return (FloatBuffer) BufferUtils.createFloatBuffer(data.length).put(data).flip();
     }
 
     public static IntBuffer storeDataInIntBufferBuffer(int[] data) {
-        return (IntBuffer)BufferUtils.createIntBuffer(data.length).put(data).flip();
+        return (IntBuffer) BufferUtils.createIntBuffer(data.length).put(data).flip();
+    }
+
+    public static void deleteVAO(int vaoID) {
+        GL30.glDeleteVertexArrays(vaoID);
+        for (Integer vboID : vaoList.remove(vaoID)) {
+            GL15.glDeleteBuffers(vboID);
+        }
+    }
+
+    public static void deleteTexture(int textureID) {
+        GL11.glDeleteTextures(textureID);
+        textureList.remove(textureID);
     }
 
 }

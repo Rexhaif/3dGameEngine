@@ -53,12 +53,20 @@ public abstract class ShaderProgram {
     }
 
     public static void cleanUp() {
-        for (int program : programs.keySet()) {
-            GL20.glDetachShader(program, programs.get(program)[0]);
-            GL20.glDetachShader(program, programs.get(program)[1]);
-            GL20.glDetachShader(program, programs.get(program)[2]);
-            GL20.glDeleteProgram(program);
+        for (Map.Entry<Integer, int[]> program : programs.entrySet()) {
+            GL20.glDetachShader(program.getKey(), program.getValue()[0]);
+            GL20.glDetachShader(program.getKey(), program.getValue()[1]);
+            GL20.glDetachShader(program.getKey(), program.getValue()[2]);
+            GL20.glDeleteProgram(program.getKey());
         }
+    }
+
+    public void delete() {
+        GL20.glDetachShader(programID, vertexID);
+        GL20.glDetachShader(programID, geometryID);
+        GL20.glDetachShader(programID, fragmentID);
+        GL20.glDeleteProgram(programID);
+        programs.remove(programID);
     }
 
     protected abstract void getAllUniformLocation();

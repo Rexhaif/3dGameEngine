@@ -1,6 +1,6 @@
 package com.notjuststudio.engine3dgame.render;
 
-import com.notjuststudio.engine3dgame.Keeper;
+import com.notjuststudio.engine3dgame.Entity;
 import com.notjuststudio.engine3dgame.MyShaderProgram;
 import com.notjuststudio.engine3dgame.attributes.Camera;
 import com.notjuststudio.engine3dgame.attributes.Model;
@@ -36,16 +36,16 @@ public class DefaultRenderer extends Renderer {
         GL20.glEnableVertexAttribArray(2);
     }
 
-    private void prepareKeeper(Keeper keeper) {
-        ((MyShaderProgram) activeModel.getTexture().getShaderProgram()).loadTransformationMatrix(keeper.getTransformationMatrix());
+    private void prepareKeeper(Entity entity) {
+        ((MyShaderProgram) activeModel.getTexture().getShaderProgram()).loadTransformationMatrix(entity.getTransformationMatrix());
     }
 
     @Override
     public void render() {
         for (Model model : Model.getKeySet()) {
             prepareModel(model);
-            for (Keeper keeper : Model.getList(model)) {
-                prepareKeeper(keeper);
+            for (Entity entity : Model.getList(model)) {
+                prepareKeeper(entity);
                 GL11.glDrawElements(GL11.GL_TRIANGLES, model.getData().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
             }
             unbind();

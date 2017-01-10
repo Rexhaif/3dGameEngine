@@ -6,7 +6,7 @@ import org.lwjgl.input.Keyboard;
 /**
  * Created by George on 07.01.2017.
  */
-public class MyCamera extends Keeper {
+public class MyCamera extends Entity {
 
     private Camera camera;
 

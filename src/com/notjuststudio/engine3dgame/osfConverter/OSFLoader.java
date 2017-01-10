@@ -16,7 +16,6 @@ public class OSFLoader {
 
         ByteBuffer byteBuffer;
         FileWriter fw;
-        int tmp;
         try {
             fw = new FileWriter(file);
         } catch (IOException e) {

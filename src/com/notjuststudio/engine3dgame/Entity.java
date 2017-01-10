@@ -13,21 +13,21 @@ import java.util.List;
 /**
  * Created by George on 06.01.2017.
  */
-public class Keeper implements Cloneable{
+public class Entity implements Cloneable{
 
-    public static Keeper getDefault() {
+    public static Entity getDefault() {
         try {
-            return (Keeper)DEFAULT.clone();
+            return (Entity)DEFAULT.clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    private static final Keeper DEFAULT = new Keeper(new Vector3f(0,0,0), new Quaternion(0,0,0,1),new Vector3f(1,1,1));
+    private static final Entity DEFAULT = new Entity(new Vector3f(0,0,0), new Quaternion(0,0,0,1),new Vector3f(1,1,1));
 
-    private Keeper parent = null;
-    private List<Keeper> children = new ArrayList<>();
+    private Entity parent = null;
+    private List<Entity> children = new ArrayList<>();
 
     private List<Attribute> attributes = new ArrayList<>();
 
@@ -35,23 +35,23 @@ public class Keeper implements Cloneable{
     private Quaternion rotation;
     private Vector3f scale;
 
-    public Keeper() {
+    public Entity() {
         this.position = DEFAULT.position;
         this.rotation = DEFAULT.rotation;
         this.scale = DEFAULT.scale;
     }
 
-    public Keeper(Vector3f position, Quaternion angle, Vector3f scale) {
+    public Entity(Vector3f position, Quaternion angle, Vector3f scale) {
         this.position = position;
         this.rotation = angle;
         this.scale = scale;
     }
 
-    public Keeper getParent() {
+    public Entity getParent() {
         return parent;
     }
 
-    public List<Keeper> getChildren() {
+    public List<Entity> getChildren() {
         return children;
     }
 
@@ -71,72 +71,72 @@ public class Keeper implements Cloneable{
         return scale;
     }
 
-    public Keeper setLocalPosition(Vector3f position) {
+    public Entity setLocalPosition(Vector3f position) {
         this.position = position;
         return this;
     }
 
-    public Keeper setLocalPosition(float x, float y, float z) {
+    public Entity setLocalPosition(float x, float y, float z) {
         this.position = new Vector3f(x,y,z);
         return this;
     }
 
-    public Keeper setLocalAngle(Quaternion rotation) {
+    public Entity setLocalAngle(Quaternion rotation) {
         this.rotation = rotation;
         return this;
     }
 
-    public Keeper setLocalAngle(float angle, float x, float y, float z) {
+    public Entity setLocalAngle(float angle, float x, float y, float z) {
         this.rotation = Maths.createRotationQuaternion(angle, new Vector3f(x,y,z));
         return this;
     }
 
-    public Keeper setLocalScale(Vector3f scale) {
+    public Entity setLocalScale(Vector3f scale) {
         this.scale = scale;
         return this;
     }
 
-    public Keeper setLocalScale(float x, float y, float z) {
+    public Entity setLocalScale(float x, float y, float z) {
         this.scale = new Vector3f(x,y,z);
         return this;
     }
 
-    public Keeper addLocalPosition(Vector3f position) {
+    public Entity addLocalPosition(Vector3f position) {
         this.position = Vector3f.add(this.position, position, null);
         return this;
     }
 
-    public Keeper addLocalPosition(float x, float y, float z) {
+    public Entity addLocalPosition(float x, float y, float z) {
         this.position = Vector3f.add(this.position, new Vector3f(x,y,z), null);
         return this;
     }
 
-    public Keeper addLocalAngle(Quaternion rotation) {
+    public Entity addLocalAngle(Quaternion rotation) {
         this.rotation = Quaternion.mul(rotation, this.rotation, null);
         return this;
     }
 
-    public Keeper addLocalAngle(float angle, float x, float y, float z) {
+    public Entity addLocalAngle(float angle, float x, float y, float z) {
         this.rotation = Quaternion.mul(Maths.createRotationQuaternion(angle, new Vector3f(x,y,z)), this.rotation, null);
         return this;
     }
 
-    public Keeper addLocalScale(Vector3f scale) {
+    public Entity addLocalScale(Vector3f scale) {
         this.scale = Maths.myMultiplication(this.scale, scale);
         return this;
     }
 
-    public Keeper addLocalScale(float x, float y, float z) {
+    public Entity addLocalScale(float x, float y, float z) {
         this.scale = Maths.myMultiplication(this.scale, new Vector3f(x,y,z));
         return this;
     }
 
-    public Keeper setParent(Keeper parent) {
+    public Entity setParent(Entity parent) {
         parent.addChild(this);
         return this;
     }
 
-    public Keeper addChild(Keeper child) {
+    public Entity addChild(Entity child) {
         if (child == this)
             return this;
         this.children.add(child);
@@ -144,25 +144,21 @@ public class Keeper implements Cloneable{
         return this;
     }
 
-    public Keeper removeChild(Keeper child) {
+    public Entity removeChild(Entity child) {
         this.children.remove(child);
         return this;
     }
 
-    public Keeper addAttribute(Attribute attribute) {
+    public Entity addAttribute(Attribute attribute) {
         if (attribute.getType().SINGLTONE && hasAttributeType(attribute.getType()))
             return this;
-        if (attribute.getType() == Attribute.Type.RENDER_MODEL){
-            ((Model)attribute).addToMap(this);
-        }
-        this.attributes.add(attribute);
-        attribute.setLocation(this);
+        this.attributes.add(attribute.setEntity(this));
         return this;
     }
 
-    public Keeper removeAttribute(Attribute attribute) {
+    public Entity removeAttribute(Attribute attribute) {
         this.attributes.remove(attribute);
-        attribute.setLocation(null);
+        attribute.delete();
         return this;
     }
 
@@ -173,6 +169,16 @@ public class Keeper implements Cloneable{
             }
         }
         return null;
+    }
+
+    public List<Attribute> getAttributesOfType(Attribute.Type type) {
+        List<Attribute> result = new ArrayList<>();
+        for (Attribute attribute : attributes) {
+            if (attribute.getType() == type) {
+                result.add(attribute);
+            }
+        }
+        return result;
     }
 
     public boolean hasAttributeType(Attribute.Type type) {

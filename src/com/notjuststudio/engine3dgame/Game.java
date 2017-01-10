@@ -9,13 +9,10 @@ import com.notjuststudio.engine3dgame.osfConverter.OSFLoader;
 import com.notjuststudio.engine3dgame.osfConverter.VAOContainer;
 import com.notjuststudio.engine3dgame.render.MasterRenderer;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
-import com.notjuststudio.engine3dgame.shader.ShadersContainer;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by George on 06.01.2017.
@@ -45,23 +42,38 @@ public class Game {
                 1, 1
         };
 
-        VAOContainer container = COLLADAFileLoader.loadDAEtoVAOContainer("res/cube1.dae");
+        VAOContainer dataContainer = COLLADAFileLoader.loadDAEtoVAOContainer("res/cube1.dae");
 
-        OSFLoader.loadToOSF("res/cube.osf", container);
+        OSFLoader.loadToOSF("res/cube.osf", dataContainer);
 
-        container = OSFLoader.loadFromOSF("res/cube.osf");
+        dataContainer = OSFLoader.loadFromOSF("res/cube.osf");
 
-        ModelData boxModel = Loader.createModelData(container);
+        ModelData boxModel = Loader.createModelData(dataContainer);
 
         ModelTexture texture = new ModelTexture(Loader.loadTexture("res/steam.png"), new MyShaderProgram()).setShineDamper(10).setReflectivity(1);
         Model model = new Model(boxModel, texture);
 
-        Keeper box = new Keeper().setLocalPosition(0,0,-5);
-        box.addAttribute(model);
+        int side = 25;
+        float delta = 3f;
+        float centerZ = -175;
+
+        Entity box = new Entity().setLocalPosition(0,0,centerZ);
+
+        for (int i = 0; i < side; i++) {
+            for (int j = 0; j < side; j++) {
+                for (int k = 0; k < side; k++) {
+                    box.addChild(new Entity().setLocalPosition(
+                            -delta * ((float) (side - 1) / 2) + i * delta,
+                            -delta * ((float) (side - 1) / 2) + j * delta,
+                            -delta * ((float) (side - 1) / 2) + k * delta
+                    ).addAttribute(model));
+                }
+            }
+        }
 
         MyCamera cameraKeeper = new MyCamera();
 
-        Keeper lamp = new Keeper().setLocalPosition(-5,5,-2.5f);
+        Entity lamp = new Entity().setLocalPosition(-5,5,-2.5f);
         Light light = new Light(1,1,1);
 
         lamp.addAttribute(light);
@@ -71,8 +83,7 @@ public class Game {
         while(!Display.isCloseRequested()) {
 
             cameraKeeper.move();
-            box.addLocalAngle((float)Math.PI/4 * DisplayManager.getFrameTimeSeconds(), 1,1,0);
-
+            box.addLocalAngle((float) Math.PI / 4 * DisplayManager.getFrameTimeSeconds(), 1, 1, 0);
 
             MasterRenderer.render();
 

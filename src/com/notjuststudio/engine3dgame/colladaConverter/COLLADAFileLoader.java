@@ -17,7 +17,7 @@ public class COLLADAFileLoader {
 
 	public static ModelData loadDAE(String daeFileName) {
 		VaoContainer container = loadDAEtoVaoContainer(daeFileName);
-		return Loader.createModelData(container.indicesArray, container.verticesArray, container.texturesArray, container.normalsArray);
+		return Loader.createModelData(Loader.createVAOContainer(container.indicesArray, container.verticesArray, container.texturesArray, container.normalsArray));
 	}
 
 	public static VAOContainer loadDAEtoVAOContainer(String daeFileName) {
