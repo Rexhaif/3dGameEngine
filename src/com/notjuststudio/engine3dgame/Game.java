@@ -11,9 +11,6 @@ import com.notjuststudio.engine3dgame.render.MasterRenderer;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 import org.lwjgl.opengl.Display;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by George on 06.01.2017.
  */
@@ -57,7 +54,10 @@ public class Game {
         float delta = 3f;
         float centerZ = -175;
 
-        Entity box = new Entity().setLocalPosition(0,0,centerZ);
+        Entity box = new Entity().setLocalRotation(-(float)Math.PI/4, 0,0,1);
+        Entity boxScaler = new Entity().setLocalScale(1,0.25f,(float)Math.sqrt(2)).addChild(box);
+        Entity boxRotator = new Entity().setLocalRotation((float)Math.PI/2, 1,0,0).addChild(boxScaler);
+        Entity boxPosition = new Entity().setLocalPosition(0,0,centerZ).addChild(boxRotator);
 
         for (int i = 0; i < side; i++) {
             for (int j = 0; j < side; j++) {
@@ -83,7 +83,8 @@ public class Game {
         while(!Display.isCloseRequested()) {
 
             cameraKeeper.move();
-            box.addLocalAngle((float) Math.PI / 4 * DisplayManager.getFrameTimeSeconds(), 1, 1, 0);
+            boxScaler.addLocalRotation(-(float) Math.PI * 4 * DisplayManager.getFrameTimeSeconds(), 0,1,0);
+            boxPosition.addLocalRotation(-(float) Math.PI /4 * DisplayManager.getFrameTimeSeconds(), 1,1,0);
 
             MasterRenderer.render();
 

@@ -81,12 +81,12 @@ public class Entity implements Cloneable{
         return this;
     }
 
-    public Entity setLocalAngle(Quaternion rotation) {
+    public Entity setLocalRotation(Quaternion rotation) {
         this.rotation = rotation;
         return this;
     }
 
-    public Entity setLocalAngle(float angle, float x, float y, float z) {
+    public Entity setLocalRotation(float angle, float x, float y, float z) {
         this.rotation = Maths.createRotationQuaternion(angle, new Vector3f(x,y,z));
         return this;
     }
@@ -111,12 +111,12 @@ public class Entity implements Cloneable{
         return this;
     }
 
-    public Entity addLocalAngle(Quaternion rotation) {
+    public Entity addLocalRotation(Quaternion rotation) {
         this.rotation = Quaternion.mul(rotation, this.rotation, null);
         return this;
     }
 
-    public Entity addLocalAngle(float angle, float x, float y, float z) {
+    public Entity addLocalRotation(float angle, float x, float y, float z) {
         this.rotation = Quaternion.mul(Maths.createRotationQuaternion(angle, new Vector3f(x,y,z)), this.rotation, null);
         return this;
     }
@@ -132,14 +132,28 @@ public class Entity implements Cloneable{
     }
 
     public Entity setParent(Entity parent) {
-        parent.addChild(this);
+        if (parent == this)
+            return this;
+        resetParent();
+        if (parent != null && !parent.children.contains(this)) {
+            parent.children.add(this);
+        }
+        this.parent = parent;
+        return this;
+    }
+
+    public Entity resetParent() {
+        if (parent != null && parent.children.contains(this)) {
+            parent.children.remove(this);
+        }
+        parent = null;
         return this;
     }
 
     public Entity addChild(Entity child) {
         if (child == this)
             return this;
-        this.children.add(child);
+        this.children.add(child.setParent(this));
         child.parent = this;
         return this;
     }
@@ -158,7 +172,7 @@ public class Entity implements Cloneable{
 
     public Entity removeAttribute(Attribute attribute) {
         this.attributes.remove(attribute);
-        attribute.delete();
+        attribute.resetEntity();
         return this;
     }
 

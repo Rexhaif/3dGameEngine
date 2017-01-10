@@ -40,10 +40,19 @@ public abstract class Attribute implements Cloneable {
     }
 
     public Attribute setEntity(Entity entity) {
-        if (!entity.getAttributes().contains(this)) {
+        resetEntity();
+        if (entity != null && !entity.getAttributes().contains(this)) {
             entity.getAttributes().add(this);
         }
         this.entity = entity;
+        return this;
+    }
+
+    public Attribute resetEntity() {
+        if (entity != null && entity.getAttributes().contains(this)) {
+            entity.getAttributes().remove(this);
+        }
+        entity = null;
         return this;
     }
 
