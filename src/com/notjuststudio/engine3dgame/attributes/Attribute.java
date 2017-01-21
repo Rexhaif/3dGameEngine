@@ -12,6 +12,7 @@ public abstract class Attribute implements Cloneable {
 
     public enum Type {
         RENDER_MODEL (true),
+        RIGGED_MODEL (true),
         CAMERA (true),
         LIGHT (true);
         public final boolean SINGLTONE;

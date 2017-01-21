@@ -1,7 +1,6 @@
 package com.notjuststudio.engine3dgame;
 
 import com.notjuststudio.engine3dgame.attributes.Attribute;
-import com.notjuststudio.engine3dgame.attributes.Model;
 import com.notjuststudio.engine3dgame.util.Maths;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;
@@ -24,27 +23,71 @@ public class Entity implements Cloneable{
         return null;
     }
 
-    private static final Entity DEFAULT = new Entity(new Vector3f(0,0,0), new Quaternion(0,0,0,1),new Vector3f(1,1,1));
+    private static final Entity DEFAULT = new Entity("DEFAULT", new Vector3f(0,0,0), new Quaternion(0,0,0,1),new Vector3f(1,1,1));
+
+    private static List<Entity> allEntities;
+
+    static {
+        allEntities = new ArrayList<>();
+        allEntities.add(DEFAULT);
+    }
 
     private Entity parent = null;
     private List<Entity> children = new ArrayList<>();
 
     private List<Attribute> attributes = new ArrayList<>();
 
-    private Vector3f position;
-    private Quaternion rotation;
-    private Vector3f scale;
+    private String name;
+    private Vector3f position = null;
+    private Quaternion rotation = null;
+    private Vector3f scale = null;
+    private Matrix4f transformationMatrix;
 
     public Entity() {
-        this.position = DEFAULT.position;
-        this.rotation = DEFAULT.rotation;
-        this.scale = DEFAULT.scale;
+        this(DEFAULT.name);
     }
 
-    public Entity(Vector3f position, Quaternion angle, Vector3f scale) {
+    public Entity(String name) {
+        this(name, DEFAULT.position, DEFAULT.rotation, DEFAULT.scale);
+    }
+
+    public Entity(String name, Vector3f position, Quaternion angle, Vector3f scale) {
+        this.name = name;
         this.position = position;
         this.rotation = angle;
         this.scale = scale;
+        resolveTransformationMatrix();
+    }
+
+    public Entity(String name, Matrix4f transformationMatrix) {
+        this.name = name;
+        this.transformationMatrix = transformationMatrix;
+    }
+
+    public static boolean nameExists(String name) {
+        for (Entity entity : allEntities) {
+            if (entity.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Entity getByName(String name) {
+        for (Entity entity : allEntities) {
+            if (entity.getName().equals(name)) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Entity getParent() {
@@ -60,7 +103,7 @@ public class Entity implements Cloneable{
     }
 
     public Vector3f getWorldPosition() {
-        return getTranslation();
+        return Maths.impactVectorByMatrix(getWorldTransformation(), new Vector3f(0,0,0));
     }
 
     public Quaternion getWorldRotation() {
@@ -93,86 +136,177 @@ public class Entity implements Cloneable{
         return Maths.impactVectorByMatrix(Maths.createRotationMatrix(getWorldRotation()), new Vector3f(0,-1,0));
     }
 
-    public Vector3f getLocalPosition() {
+    public Matrix4f getWorldTransformation() {
+        if (parent == null) {
+            return transformationMatrix;
+        }
+        return Matrix4f.mul(parent.getWorldTransformation(), transformationMatrix, null);
+    }
+    
+    public Matrix4f getTransformation() {
+        return transformationMatrix;
+    }
+
+    public Entity setTransformation(Matrix4f transformationMatrix) {
+        this.transformationMatrix = transformationMatrix;
+        return this;
+    }
+
+    public Vector3f getPosition() {
         return position;
     }
 
-    public Quaternion getLocalRotation() {
+    public Quaternion getRotation() {
         return rotation;
     }
 
-    public Vector3f getLocalScale() {
+    public Vector3f getScale() {
         return scale;
     }
 
-    public Entity setLocalPosition(Vector3f position) {
+    public Entity setPositionSilent(Vector3f position) {
         this.position = position;
         return this;
     }
 
-    public Entity setLocalPosition(float x, float y, float z) {
-        this.position = new Vector3f(x,y,z);
+    public Entity setPositionSilent(float x, float y, float z) {
+        this.setPositionSilent(new Vector3f(x,y,z));
         return this;
     }
 
-    public Entity setLocalRotation(Quaternion rotation) {
+    public Entity setPosition(Vector3f position) {
+        this.setPositionSilent(position);
+        this.resolveTransformationMatrix();
+        return this;
+    }
+
+    public Entity setPosition(float x, float y, float z) {
+        this.setPosition(new Vector3f(x,y,z));
+        return this;
+    }
+
+    public Entity setRotationSilent(Quaternion rotation) {
         this.rotation = rotation;
         return this;
     }
 
-    public Entity setLocalRotation(float angle, Vector3f axis) {
-        this.rotation = Maths.createRotationQuaternion(angle, axis);
+    public Entity setRotation(Quaternion rotation) {
+        this.setRotationSilent(rotation);
+        this.resolveTransformationMatrix();
         return this;
     }
 
-    public Entity setLocalRotation(float angle, float x, float y, float z) {
-        this.rotation = Maths.createRotationQuaternion(angle, new Vector3f(x,y,z));
+    public Entity setRotationSilent(float angle, Vector3f axis) {
+        this.setRotationSilent(Maths.createRotationQuaternion(angle, axis));
         return this;
     }
 
-    public Entity setLocalScale(Vector3f scale) {
+    public Entity setRotation(float angle, Vector3f axis) {
+        this.setRotation(Maths.createRotationQuaternion(angle, axis));
+        return this;
+    }
+
+    public Entity setRotationSilent(float angle, float x, float y, float z) {
+        this.setRotationSilent(angle, new Vector3f(x,y,z));
+        return this;
+    }
+
+    public Entity setRotation(float angle, float x, float y, float z) {
+        this.setRotation(angle, new Vector3f(x,y,z));
+        return this;
+    }
+
+    public Entity setScaleSilent(Vector3f scale) {
         this.scale = scale;
         return this;
     }
 
-    public Entity setLocalScale(float x, float y, float z) {
-        this.scale = new Vector3f(x,y,z);
+    public Entity setScale(Vector3f scale) {
+        this.setScaleSilent(scale);
+        this.resolveTransformationMatrix();
         return this;
     }
 
-    public Entity addLocalPosition(Vector3f position) {
+    public Entity setScaleSilent(float x, float y, float z) {
+        this.setScaleSilent( new Vector3f(x,y,z));
+        return this;
+    }
+
+    public Entity setScale(float x, float y, float z) {
+        this.setScale( new Vector3f(x,y,z));
+        return this;
+    }
+
+    public Entity addPositionSilent(Vector3f position) {
         this.position = Vector3f.add(this.position, position, null);
         return this;
     }
 
-    public Entity addLocalPosition(float x, float y, float z) {
-        this.position = Vector3f.add(this.position, new Vector3f(x,y,z), null);
+    public Entity addPosition(Vector3f position) {
+        this.addPositionSilent(position);
+        this.resolveTransformationMatrix();
         return this;
     }
 
-    public Entity addLocalRotation(Quaternion rotation) {
+    public Entity addPositionSilent(float x, float y, float z) {
+        this.addPositionSilent(new Vector3f(x,y,z));
+        return this;
+    }
+
+    public Entity addPosition(float x, float y, float z) {
+        this.addPosition(new Vector3f(x,y,z));
+        return this;
+    }
+
+    public Entity addRotationSilent(Quaternion rotation) {
         this.rotation = Quaternion.mul(rotation, this.rotation, null);
         return this;
     }
 
-    public Entity addLocalRotation(float angle, Vector3f axis) {
-        this.rotation = Quaternion.mul(Maths.createRotationQuaternion(angle, axis), this.rotation, null);
+    public Entity addRotation(Quaternion rotation) {
+        this.addRotationSilent(rotation);
+        this.resolveTransformationMatrix();
         return this;
     }
 
-
-    public Entity addLocalRotation(float angle, float x, float y, float z) {
-        this.rotation = Quaternion.mul(Maths.createRotationQuaternion(angle, new Vector3f(x,y,z)), this.rotation, null);
+    public Entity addRotationSilent(float angle, Vector3f axis) {
+        this.addRotationSilent(Maths.createRotationQuaternion(angle, axis));
         return this;
     }
 
-    public Entity addLocalScale(Vector3f scale) {
+    public Entity addRotation(float angle, Vector3f axis) {
+        this.addRotation(Maths.createRotationQuaternion(angle, axis));
+        return this;
+    }
+
+    public Entity addRotationSilent(float angle, float x, float y, float z) {
+        this.addRotationSilent(angle, new Vector3f(x,y,z));
+        return this;
+    }
+
+    public Entity addRotation(float angle, float x, float y, float z) {
+        this.addRotation(angle, new Vector3f(x,y,z));
+        return this;
+    }
+
+    public Entity addScaleSilent(Vector3f scale) {
         this.scale = Maths.myMultiplication(this.scale, scale);
         return this;
     }
 
-    public Entity addLocalScale(float x, float y, float z) {
-        this.scale = Maths.myMultiplication(this.scale, new Vector3f(x,y,z));
+    public Entity addScale(Vector3f scale) {
+        this.addScaleSilent(scale);
+        this.resolveTransformationMatrix();
+        return this;
+    }
+
+    public Entity addScaleSilent(float x, float y, float z) {
+        this.addScaleSilent( new Vector3f(x,y,z));
+        return this;
+    }
+
+    public Entity addScale(float x, float y, float z) {
+        this.addScale( new Vector3f(x,y,z));
         return this;
     }
 
@@ -249,29 +383,7 @@ public class Entity implements Cloneable{
         return false;
     }
 
-    public Matrix4f getTransformationMatrix() {
-        Matrix4f result = new Matrix4f();
-        Matrix4f.setIdentity(result);
-        Matrix4f.translate(getTranslation(), result, result);
-        return Matrix4f.mul(result, getTransformationMatrixWithoutTrans(), null);
-    }
-
-    private Matrix4f getTransformationMatrixWithoutTrans() {
-        Matrix4f result = new Matrix4f();
-        Matrix4f.scale(scale, Maths.createRotationMatrix(rotation), result);
-        if (parent == null)
-            return result;
-        return Matrix4f.mul(parent.getTransformationMatrixWithoutTrans(), result, null);
-    }
-
-    private Vector3f getTranslation() {
-        return getTranslation(new Vector3f(0,0,0));
-    }
-
-    private Vector3f getTranslation(Vector3f translation) {
-        Vector3f result = Vector3f.add(position, Maths.impactVectorByMatrix(Maths.createRotationMatrix(Maths.invertQuaternion(rotation)), Maths.myMultiplication(translation, scale)), null);
-        if (parent == null)
-            return result;
-        return parent.getTranslation(result);
+    public void resolveTransformationMatrix() {
+        transformationMatrix = Maths.createTransformationMatrix(position, rotation, scale);
     }
 }

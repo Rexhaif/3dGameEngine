@@ -5,6 +5,11 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;
 import org.lwjgl.util.vector.Vector3f;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 /**
  * Created by George on 06.01.2017.
  */
@@ -67,6 +72,27 @@ public class Maths {
         result.y = -quaternion.y;
         result.z = -quaternion.z;
         return result;
+    }
+
+    public static Vector3f scaleVector(Vector3f vector, float scale) {
+        return new Vector3f(vector.x * scale, vector.y * scale, vector.z * scale);
+    }
+
+    public static String parseFile(String filePath) {
+        StringBuilder shaderSource = new StringBuilder();
+        try{
+            InputStream in = Class.class.getResourceAsStream(filePath);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            String line;
+            while((line = reader.readLine())!=null){
+                shaderSource.append(line).append("//\n");
+            }
+            reader.close();
+            in.close();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        return shaderSource.toString();
     }
 
 }

@@ -1,5 +1,7 @@
 package com.notjuststudio.engine3dgame;
 
+import com.notjuststudio.engine3dgame.attributes.RenderModel;
+import com.notjuststudio.engine3dgame.attributes.model.ModelTexture;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 import com.notjuststudio.engine3dgame.shader.ShadersBuilder;
 import org.lwjgl.util.vector.Matrix4f;
@@ -28,5 +30,20 @@ public class SkyboxShader extends ShaderProgram {
     protected void getAllUniformLocation() {
         location_projectionMatrix = super.getUniformLocation("projectionMatrix");
         location_viewMatrix = super.getUniformLocation("viewMatrix");
+    }
+
+    @Override
+    public void loadWhenCreated(ModelTexture modelTexture) {
+
+    }
+
+    @Override
+    public void loadPrepareModel(RenderModel renderModel) {
+
+    }
+
+    @Override
+    public void loadPrepareEntity(Entity entity) {
+
     }
 }

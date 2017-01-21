@@ -10,23 +10,24 @@ import java.util.*;
 /**
  * Created by George on 06.01.2017.
  */
-public class Model extends Attribute{
+public class RenderModel extends Attribute{
 
+    
     private ModelData data;
     private ModelTexture texture;
 
-    private static Map<Model, List<Entity>> models = new HashMap<>();
-    private static Map<ModelData, List<Model>> modelDatas = new HashMap<>();
+    private static Map<RenderModel, List<Entity>> models = new HashMap<>();
+    private static Map<ModelData, List<RenderModel>> modelDatas = new HashMap<>();
 
-    public Model(ModelData data, ModelTexture texture) {
+    public RenderModel(ModelData data, ModelTexture texture) {
         super(Type.RENDER_MODEL);
-        List<Model> modelList = modelDatas.get(data);
-        if (modelList != null) {
-            modelList.add(this);
+        List<RenderModel> renderModelList = modelDatas.get(data);
+        if (renderModelList != null) {
+            renderModelList.add(this);
         } else {
-            modelList = new ArrayList<>();
-            modelList.add(this);
-            modelDatas.put(data, modelList);
+            renderModelList = new ArrayList<>();
+            renderModelList.add(this);
+            modelDatas.put(data, renderModelList);
         }
         this.data = data;
         this.texture = texture;
@@ -51,12 +52,12 @@ public class Model extends Attribute{
         }
     }
 
-    public static Set<Model> getKeySet() {
+    public static Set<RenderModel> getKeySet() {
         return models.keySet();
     }
 
-    public static List<Entity> getList(Model model) {
-        return models.get(model);
+    public static List<Entity> getList(RenderModel renderModel) {
+        return models.get(renderModel);
     }
 
     @Override
@@ -71,7 +72,7 @@ public class Model extends Attribute{
 
     private static void deleteModelData(ModelData data) {
         Loader.deleteVAO(data.getVaoID());
-        modelDatas.remove(data).forEach(Model::delete);
+        modelDatas.remove(data).forEach(RenderModel::delete);
     }
 
     @Override

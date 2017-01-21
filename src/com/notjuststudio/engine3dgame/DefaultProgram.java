@@ -2,15 +2,17 @@ package com.notjuststudio.engine3dgame;
 
 import com.notjuststudio.engine3dgame.attributes.Camera;
 import com.notjuststudio.engine3dgame.attributes.Light;
+import com.notjuststudio.engine3dgame.attributes.RenderModel;
+import com.notjuststudio.engine3dgame.attributes.model.ModelTexture;
+import com.notjuststudio.engine3dgame.render.MasterRenderer;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 import com.notjuststudio.engine3dgame.shader.ShadersBuilder;
-import com.notjuststudio.engine3dgame.shader.ShadersContainer;
 import org.lwjgl.util.vector.Matrix4f;
 
 /**
  * Created by George on 06.01.2017.
  */
-public class MyShaderProgram extends ShaderProgram {
+public class DefaultProgram extends ShaderProgram {
 
     private int location_transformationMatrix;
     private int location_projectionMatrix;
@@ -20,7 +22,7 @@ public class MyShaderProgram extends ShaderProgram {
     private int location_shineDamper;
     private int location_reflectivity;
 
-    public MyShaderProgram() {
+    public DefaultProgram() {
         super(ShadersBuilder.createDefaultContainer());
     }
 
@@ -35,6 +37,23 @@ public class MyShaderProgram extends ShaderProgram {
         location_reflectivity = super.getUniformLocation("reflectivity");
     }
 
+    @Override
+    public void loadWhenCreated(ModelTexture modelTexture) {
+        loadShineVariable(modelTexture.getShineDamper(), modelTexture.getReflectivity());
+    }
+
+    @Override
+    public void loadPrepareModel(RenderModel renderModel) {
+        loadProjectionMatrix(Camera.getMainCamera().getProjectionMatrix());
+        loadViewMatrix(Camera.getMainCamera().getViewMatrix());
+        loadLight(MasterRenderer.getLight());
+    }
+
+    @Override
+    public void loadPrepareEntity(Entity entity) {
+        loadTransformationMatrix(entity.getWorldTransformation());
+    }
+
     public void loadShineVariable(float damper, float reflectivity) {
         super.loadFloat(location_shineDamper, damper);
         super.loadFloat(location_reflectivity, reflectivity);
@@ -44,8 +63,8 @@ public class MyShaderProgram extends ShaderProgram {
         super.loadMatrix(location_transformationMatrix, matrix4f);
     }
 
-    public void loadProjectionMatrix(Camera camera) {
-        super.loadMatrix(location_projectionMatrix, camera.getProjectionMatrix());
+    public void loadProjectionMatrix(Matrix4f matrix4f) {
+        super.loadMatrix(location_projectionMatrix, matrix4f);
     }
 
     public void loadViewMatrix(Matrix4f matrix4f) {
@@ -53,7 +72,7 @@ public class MyShaderProgram extends ShaderProgram {
     }
 
     public void loadLight(Light light) {
-        super.loadVector(location_lightPosition, light.getEntity().getLocalPosition());
+        super.loadVector(location_lightPosition, light.getEntity().getPosition());
         super.loadVector(location_lightColour, light.getColour());
     }
 }

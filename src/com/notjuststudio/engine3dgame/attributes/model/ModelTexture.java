@@ -16,6 +16,9 @@ public class ModelTexture {
     public ModelTexture(int textureID, ShaderProgram shaderProgram) {
         this.textureID = textureID;
         this.shaderProgram = shaderProgram;
+        shaderProgram.useThis();
+        shaderProgram.loadWhenCreated(this);
+        ShaderProgram.useNone();
     }
 
     public int getTextureID() {

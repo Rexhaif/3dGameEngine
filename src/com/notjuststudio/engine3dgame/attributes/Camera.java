@@ -74,12 +74,12 @@ public class Camera extends Attribute{
 
     public void resolveViewMatrix() {
         Matrix4f result = new Matrix4f();
-         Matrix4f.setIdentity(result);
+        Matrix4f.setIdentity(result);
 
         Entity entity = getEntity();
 
-        Matrix4f.translate(entity.getLocalPosition().negate(null), result, result);
-        Matrix4f.mul(result, Maths.createRotationMatrix(entity.getLocalRotation()), result);
+        Matrix4f.mul(result, Maths.createRotationMatrix(entity.getRotation()), result);
+        Matrix4f.translate(entity.getPosition().negate(null), result, result);
         viewMatrix = result;
     }
 

@@ -65,7 +65,7 @@ public class MasterRenderer {
     private static void renderSkybox() {
         skyboxShader.useThis();
         ((SkyboxShader)skyboxShader).loadProjectionMatrix(Camera.getMainCamera().getProjectionMatrix());
-        Matrix4f matrix = Maths.createRotationMatrix(Camera.getMainCamera().getEntity().getLocalRotation());
+        Matrix4f matrix = Maths.createRotationMatrix(Camera.getMainCamera().getEntity().getRotation());
         ((SkyboxShader)skyboxShader).loadViewMatrix(matrix);
         GL30.glBindVertexArray(cubeID);
         GL20.glEnableVertexAttribArray(0);

@@ -188,7 +188,7 @@ public class OSFLoader {
         saveBuffer.put(inputBuffer).flip();
         normals = saveBuffer.asFloatBuffer();
 
-        return new VAOContainer(indices, positions, uvCoords, normals);
+        return new VAOContainer().setIndices(indices).setPositions(positions).setUvCoords(uvCoords).setNormals(normals);
     }
 
     public static ByteBuffer floatBufferToByteBuffer(FloatBuffer floatBuffer) {

@@ -5,11 +5,8 @@ import com.notjuststudio.engine3dgame.osfConverter.VAOContainer;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
-import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -30,12 +27,12 @@ public class Loader {
     private static Map<Integer, List<Integer>> vaoList = new HashMap<>(); //если что, можно учитывать, что одно vbo может быть испольно раличными vao
     private static Set<Integer> textureList = new HashSet<>();
 
-    public static VAOContainer createVAOContainer(int[] indices, float[] positions, float[] uvCoords, float[] normals) {
-        return new VAOContainer(
-                storeDataInIntBufferBuffer(indices),
-                storeDataInFloatBuffer(positions),
-                storeDataInFloatBuffer(uvCoords),
-                storeDataInFloatBuffer(normals));
+    public static VAOContainer createVOContainer(int[] indices, float[] positions, float[] uvCoords, float[] normals) {
+        return new VAOContainer()
+                .setIndices(storeDataInIntBufferBuffer(indices))
+                .setPositions(storeDataInFloatBuffer(positions))
+                .setUvCoords(storeDataInFloatBuffer(uvCoords))
+                .setNormals(storeDataInFloatBuffer(normals));
     }
 
     public static ModelData createModelData(VAOContainer container) {
@@ -97,11 +94,23 @@ public class Loader {
     private static int loadToVAO(VAOContainer container) {
         int vaoID = createVAO();
         List<Integer> vboIDs = new ArrayList<>();
-        vboIDs.add(storeDataInIndicesBuffer(container.getIndices()));
-        vboIDs.add(storeDataInAttributeList(0, 3, container.getPositions()));
-        vboIDs.add(storeDataInAttributeList(1, 2, container.getUvCoords()));
-        vboIDs.add(storeDataInAttributeList(2, 3, container.getNormals()));
+        if (container.getIndices() != null)
+            vboIDs.add(storeDataInIndicesBuffer(container.getIndices()));
+        if (container.getPositions() != null)
+            vboIDs.add(storeDataInAttributeList(0, 3, container.getPositions()));
+        if (container.getUvCoords() != null)
+            vboIDs.add(storeDataInAttributeList(1, 2, container.getUvCoords()));
+        if (container.getNormals() != null)
+            vboIDs.add(storeDataInAttributeList(2, 3, container.getNormals()));
+        if (container.getBoneIndices() != null)
+            vboIDs.add(storeDataInAttributeList(3, 4, container.getBoneIndices()));
+        if (container.getBoneWeights() != null)
+            vboIDs.add(storeDataInAttributeList(4, 4, container.getBoneWeights()));
         bindDefaultVAO();
+        if (vboIDs.isEmpty()) {
+            GL30.glDeleteVertexArrays(vaoID);
+            return 0;
+        }
         vaoList.put(vaoID, vboIDs);
         return vaoID;
     }
@@ -214,6 +223,15 @@ public class Loader {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, data, GL15.GL_STATIC_DRAW);
         GL20.glVertexAttribPointer(attributeNumber, size, GL11.GL_FLOAT, false, 0, 0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        return vboID;
+    }
+
+    private static int storeDataInAttributeList(int attributeNumber, int size, IntBuffer data) {
+        int vboID = GL15.glGenBuffers();
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, data, GL15.GL_STATIC_DRAW);
+        GL20.glVertexAttribPointer(attributeNumber, size, GL11.GL_INT, false, 0, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
         return vboID;
     }

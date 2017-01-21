@@ -1,5 +1,8 @@
 package com.notjuststudio.engine3dgame.shader;
 
+import com.notjuststudio.engine3dgame.Entity;
+import com.notjuststudio.engine3dgame.attributes.RenderModel;
+import com.notjuststudio.engine3dgame.attributes.model.ModelTexture;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -116,4 +119,10 @@ public abstract class ShaderProgram {
         }
         return shaderID;
     }
+
+    public abstract void loadWhenCreated(ModelTexture modelTexture);
+
+    public abstract void loadPrepareModel(RenderModel renderModel);
+
+    public abstract void loadPrepareEntity(Entity entity);
 }
