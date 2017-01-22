@@ -7,6 +7,8 @@ import com.notjuststudio.engine3dgame.attributes.model.ModelTexture;
 import com.notjuststudio.engine3dgame.render.MasterRenderer;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 import com.notjuststudio.engine3dgame.shader.ShadersBuilder;
+import com.notjuststudio.engine3dgame.shader.ShadersContainer;
+import com.notjuststudio.engine3dgame.shader.sources.CodeBlock;
 import org.lwjgl.util.vector.Matrix4f;
 
 /**
@@ -23,7 +25,56 @@ public class DefaultProgram extends ShaderProgram {
     private int location_reflectivity;
 
     public DefaultProgram() {
-        super(ShadersBuilder.createDefaultContainer());
+        //super(ShadersBuilder.createDefaultContainer());
+        super(createContainer());
+    }
+
+    private static ShadersContainer createContainer() {
+        String[] vertexOut = {
+                "vec2 uv",
+                "vec3 surfaceNormal",
+                "vec3 toLightVector",
+                "vec3 toCameraVector"
+        };
+        String[] vertexUniform = {
+                "mat4 transformationMatrix",
+                "mat4 projectionMatrix",
+                "mat4 viewMatrix",
+                "vec3 lightPosition"
+        };
+
+        String[] geometryOut = {
+                "vec2 finalUV",
+                "vec3 finalSurfaceNormal",
+                "vec3 finalToLightVector",
+                "vec3 finalCameraVector"
+        };
+        String[] geometryUniform = {};
+
+        String[] fragmentOut = {
+                "vec4 out_Colour"
+        };
+        String[] fragmentUniform = {
+                "sampler2D textureSampler",
+                "vec3 lightColour",
+                "float shineDamper",
+                "float reflectivity"
+        };
+
+        return new ShadersBuilder()
+                .setVertexOutput(vertexOut)
+                .setVertexUniform(vertexUniform)
+                .addVertexCode(new CodeBlock("defaultVertexCode.glsl"))
+
+                .setGeometryOutput(geometryOut)
+                .setGeometryUniform(geometryUniform)
+                .addGeometryCode(new CodeBlock("defaultGeometryCode.glsl"))
+
+                .setFragmentOutput(fragmentOut)
+                .setFragmentUniform(fragmentUniform)
+                .addFragmentCode(new CodeBlock("defaultFragmentCode.glsl"))
+
+                .build();
     }
 
     @Override

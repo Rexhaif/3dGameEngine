@@ -33,7 +33,7 @@ public class Game {
 
             ModelData boxModel = Loader.createModelData(dataContainer);
 
-            ModelTexture texture = new ModelTexture(Loader.loadTexture("res/steam.png"), new DefaultProgram()).setShineDamper(10).setReflectivity(1);
+            ModelTexture texture = new ModelTexture(Loader.loadTexture("res/steam.png"), new DefaultProgram()).setShineDamper(2).setReflectivity(1).reloadShader();
             RenderModel renderModel = new RenderModel(boxModel, texture);
 
             int side = 5;

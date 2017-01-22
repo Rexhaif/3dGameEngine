@@ -28,18 +28,6 @@ public class ShadersContainer {
         return this;
     }
 
-    public boolean hasVertexShader() {
-        return !vertexShader.isEmpty();
-    }
-
-    public boolean hasGeometryShader() {
-        return !geometryShader.isEmpty();
-    }
-
-    public boolean hasFragmentShader() {
-        return !fragmentShader.isEmpty();
-    }
-
     public String getVertexShader() {
         return vertexShader;
     }

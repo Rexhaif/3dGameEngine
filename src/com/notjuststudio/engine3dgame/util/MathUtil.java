@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 /**
  * Created by George on 06.01.2017.
  */
-public class Maths {
+public class MathUtil {
 
     public static Matrix4f createTransformationMatrix(Vector3f position, Quaternion rotation, Vector3f scale) {
         Matrix4f result = new Matrix4f();
@@ -78,21 +78,6 @@ public class Maths {
         return new Vector3f(vector.x * scale, vector.y * scale, vector.z * scale);
     }
 
-    public static String parseFile(String filePath) {
-        StringBuilder shaderSource = new StringBuilder();
-        try{
-            InputStream in = Class.class.getResourceAsStream(filePath);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            String line;
-            while((line = reader.readLine())!=null){
-                shaderSource.append(line).append("//\n");
-            }
-            reader.close();
-            in.close();
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-        return shaderSource.toString();
-    }
+
 
 }

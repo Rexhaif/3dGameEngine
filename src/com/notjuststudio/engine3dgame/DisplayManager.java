@@ -21,7 +21,7 @@ public class DisplayManager {
         try {
             mode = Display.getDesktopDisplayMode();
             Display.setDisplayMode(mode);
-            Display.setFullscreen(true);
+            //Display.setFullscreen(true);
             Display.create(new PixelFormat().withSamples(4), attribs);
             Display.setTitle("GAME OF THE YEAR");
             GL11.glEnable(GL13.GL_MULTISAMPLE);

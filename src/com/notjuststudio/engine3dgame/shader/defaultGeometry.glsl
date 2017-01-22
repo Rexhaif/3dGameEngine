@@ -19,6 +19,7 @@ void main() {
         finalUV = uv[i];
         finalSurfaceNormal = surfaceNormal[i];
         finalToLightVector = toLightVector[i];
+        finalCameraVector = toCameraVector[i];
         EmitVertex();
     }
     EndPrimitive();

@@ -1,7 +1,7 @@
 package com.notjuststudio.engine3dgame;
 
 import com.notjuststudio.engine3dgame.attributes.Attribute;
-import com.notjuststudio.engine3dgame.util.Maths;
+import com.notjuststudio.engine3dgame.util.MathUtil;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;
 import org.lwjgl.util.vector.Vector3f;
@@ -103,7 +103,7 @@ public class Entity implements Cloneable{
     }
 
     public Vector3f getWorldPosition() {
-        return Maths.impactVectorByMatrix(getWorldTransformation(), new Vector3f(0,0,0));
+        return MathUtil.impactVectorByMatrix(getWorldTransformation(), new Vector3f(0,0,0));
     }
 
     public Quaternion getWorldRotation() {
@@ -113,27 +113,27 @@ public class Entity implements Cloneable{
     }
 
     public Vector3f getFront() {
-        return Maths.impactVectorByMatrix(Maths.createRotationMatrix(getWorldRotation()), new Vector3f(0,0,-1));
+        return MathUtil.impactVectorByMatrix(MathUtil.createRotationMatrix(getWorldRotation()), new Vector3f(0,0,-1));
     }
 
     public Vector3f getRight() {
-        return Maths.impactVectorByMatrix(Maths.createRotationMatrix(getWorldRotation()), new Vector3f(1,0,0));
+        return MathUtil.impactVectorByMatrix(MathUtil.createRotationMatrix(getWorldRotation()), new Vector3f(1,0,0));
     }
 
     public Vector3f getTop() {
-        return Maths.impactVectorByMatrix(Maths.createRotationMatrix(getWorldRotation()), new Vector3f(0,1,0));
+        return MathUtil.impactVectorByMatrix(MathUtil.createRotationMatrix(getWorldRotation()), new Vector3f(0,1,0));
     }
 
     public Vector3f getBack() {
-        return Maths.impactVectorByMatrix(Maths.createRotationMatrix(getWorldRotation()), new Vector3f(0,0,1));
+        return MathUtil.impactVectorByMatrix(MathUtil.createRotationMatrix(getWorldRotation()), new Vector3f(0,0,1));
     }
 
     public Vector3f getLeft() {
-        return Maths.impactVectorByMatrix(Maths.createRotationMatrix(getWorldRotation()), new Vector3f(-1,0,0));
+        return MathUtil.impactVectorByMatrix(MathUtil.createRotationMatrix(getWorldRotation()), new Vector3f(-1,0,0));
     }
 
     public Vector3f getBottom() {
-        return Maths.impactVectorByMatrix(Maths.createRotationMatrix(getWorldRotation()), new Vector3f(0,-1,0));
+        return MathUtil.impactVectorByMatrix(MathUtil.createRotationMatrix(getWorldRotation()), new Vector3f(0,-1,0));
     }
 
     public Matrix4f getWorldTransformation() {
@@ -197,12 +197,12 @@ public class Entity implements Cloneable{
     }
 
     public Entity setRotationSilent(float angle, Vector3f axis) {
-        this.setRotationSilent(Maths.createRotationQuaternion(angle, axis));
+        this.setRotationSilent(MathUtil.createRotationQuaternion(angle, axis));
         return this;
     }
 
     public Entity setRotation(float angle, Vector3f axis) {
-        this.setRotation(Maths.createRotationQuaternion(angle, axis));
+        this.setRotation(MathUtil.createRotationQuaternion(angle, axis));
         return this;
     }
 
@@ -270,12 +270,12 @@ public class Entity implements Cloneable{
     }
 
     public Entity addRotationSilent(float angle, Vector3f axis) {
-        this.addRotationSilent(Maths.createRotationQuaternion(angle, axis));
+        this.addRotationSilent(MathUtil.createRotationQuaternion(angle, axis));
         return this;
     }
 
     public Entity addRotation(float angle, Vector3f axis) {
-        this.addRotation(Maths.createRotationQuaternion(angle, axis));
+        this.addRotation(MathUtil.createRotationQuaternion(angle, axis));
         return this;
     }
 
@@ -290,7 +290,7 @@ public class Entity implements Cloneable{
     }
 
     public Entity addScaleSilent(Vector3f scale) {
-        this.scale = Maths.myMultiplication(this.scale, scale);
+        this.scale = MathUtil.myMultiplication(this.scale, scale);
         return this;
     }
 
@@ -384,6 +384,6 @@ public class Entity implements Cloneable{
     }
 
     public void resolveTransformationMatrix() {
-        transformationMatrix = Maths.createTransformationMatrix(position, rotation, scale);
+        transformationMatrix = MathUtil.createTransformationMatrix(position, rotation, scale);
     }
 }

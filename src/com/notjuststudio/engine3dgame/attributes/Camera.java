@@ -1,7 +1,7 @@
 package com.notjuststudio.engine3dgame.attributes;
 
 import com.notjuststudio.engine3dgame.Entity;
-import com.notjuststudio.engine3dgame.util.Maths;
+import com.notjuststudio.engine3dgame.util.MathUtil;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
 
@@ -78,7 +78,7 @@ public class Camera extends Attribute{
 
         Entity entity = getEntity();
 
-        Matrix4f.mul(result, Maths.createRotationMatrix(entity.getRotation()), result);
+        Matrix4f.mul(result, MathUtil.createRotationMatrix(entity.getRotation()), result);
         Matrix4f.translate(entity.getPosition().negate(null), result, result);
         viewMatrix = result;
     }

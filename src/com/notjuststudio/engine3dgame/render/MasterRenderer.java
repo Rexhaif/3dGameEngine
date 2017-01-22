@@ -5,7 +5,7 @@ import com.notjuststudio.engine3dgame.SkyboxShader;
 import com.notjuststudio.engine3dgame.attributes.Camera;
 import com.notjuststudio.engine3dgame.attributes.Light;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
-import com.notjuststudio.engine3dgame.util.Maths;
+import com.notjuststudio.engine3dgame.util.MathUtil;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -65,7 +65,7 @@ public class MasterRenderer {
     private static void renderSkybox() {
         skyboxShader.useThis();
         ((SkyboxShader)skyboxShader).loadProjectionMatrix(Camera.getMainCamera().getProjectionMatrix());
-        Matrix4f matrix = Maths.createRotationMatrix(Camera.getMainCamera().getEntity().getRotation());
+        Matrix4f matrix = MathUtil.createRotationMatrix(Camera.getMainCamera().getEntity().getRotation());
         ((SkyboxShader)skyboxShader).loadViewMatrix(matrix);
         GL30.glBindVertexArray(cubeID);
         GL20.glEnableVertexAttribArray(0);

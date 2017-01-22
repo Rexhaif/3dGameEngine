@@ -28,7 +28,7 @@ void main() {
     float specularFactor = dot(reflectedLightDirection, unitVectorToCamera);
     specularFactor = max(specularFactor, 0.0);
     float dampedFactor = pow(specularFactor, shineDamper);
-    vec3 finalSpecular = dampedFactor * lightColour;
+    vec3 finalSpecular = dampedFactor * reflectivity * lightColour;
 
     out_Colour = vec4(diffuse, 1.0) * texture(textureSampler, finalUV) + vec4(finalSpecular,1.0);
 }

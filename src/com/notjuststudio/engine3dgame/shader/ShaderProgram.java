@@ -29,7 +29,7 @@ public abstract class ShaderProgram {
 
     private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
-    public ShaderProgram(ShadersContainer container) {
+    protected ShaderProgram(ShadersContainer container) {
         vertexID = loadShader(GL20.GL_VERTEX_SHADER, container.getVertexShader());
         geometryID = loadShader(GL32.GL_GEOMETRY_SHADER, container.getGeometryShader());
         fragmentID = loadShader(GL20.GL_FRAGMENT_SHADER, container.getFragmentShader());
@@ -115,6 +115,7 @@ public abstract class ShaderProgram {
                     break;
             }
             System.err.println("Could not compile " + shaderType + " shader!");
+            System.err.println(source);
             System.exit(-1);
         }
         return shaderID;
