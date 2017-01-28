@@ -114,9 +114,8 @@ public abstract class ShaderProgram {
                     shaderType = "fragment";
                     break;
             }
-            System.err.println("Could not compile " + shaderType + " shader!");
-            System.err.println(source);
-            System.exit(-1);
+            System.out.println("Could not compile " + shaderType + " shader!");
+            System.out.println(source);
         }
         return shaderID;
     }
