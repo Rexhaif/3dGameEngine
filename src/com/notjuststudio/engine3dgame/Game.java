@@ -37,18 +37,18 @@ public class Game {
             RenderModel renderModel = new RenderModel(boxModel, texture);
 
             int side = 5;
-            float delta = 1f;
-            float centerZ = -100;
+            float delta = 0.4f;
+            float centerZ = -5;
 
             MyCamera cameraKeeper = new MyCamera();
 
-            Entity bigBox = new Entity().setPosition(0, 0, -5).setScale(1, 1, 1).setRotation((float) Math.PI / 4, 0, 0, 1);
+            Entity bigBox = new Entity().setPosition(0, 0, centerZ).setRotation((float) Math.PI / 4, 0, 0, 1);
             Entity bigBigBox = new Entity().setScale(1, 0.5f, 1).addChild(bigBox);
 
             for (int i = 0; i < side; i++) {
                 for (int j = 0; j < side; j++) {
                     for (int k = 0; k < side; k++) {
-                        bigBox.addChild(new Entity().setScale(0.4f, 0.2f, 0.2f).setPosition(
+                        bigBox.addChild(new Entity().setScale(0.2f, 0.2f, 0.2f).setPosition(
                                 -delta * (float) (side - 1) / 2 + delta * i,
                                 -delta * (float) (side - 1) / 2 + delta * j,
                                 -delta * (float) (side - 1) / 2 + delta * k

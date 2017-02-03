@@ -4,6 +4,8 @@ import com.notjuststudio.engine3dgame.attributes.RenderModel;
 import com.notjuststudio.engine3dgame.attributes.model.ModelTexture;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 import com.notjuststudio.engine3dgame.shader.ShadersBuilder;
+import com.notjuststudio.engine3dgame.shader.ShadersContainer;
+import com.notjuststudio.engine3dgame.shader.sources.CodeBlock;
 import org.lwjgl.util.vector.Matrix4f;
 
 /**
@@ -15,7 +17,16 @@ public class SkyboxShader extends ShaderProgram {
     private int location_viewMatrix;
 
     public SkyboxShader() {
-        super(ShadersBuilder.createSkyboxContainer());
+        super(createContainer());
+    }
+
+    private static ShadersContainer createContainer() {
+        return new ShadersBuilder()
+                .addVertexCode(new CodeBlock("skyboxVertex.glsl"))
+                .addGeometryCode(new CodeBlock("skyboxGeometry.glsl"))
+                .addFragmentCode(new CodeBlock("skyboxFragment.glsl"))
+
+                .build();
     }
 
     public void loadProjectionMatrix(Matrix4f matrix){

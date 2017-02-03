@@ -2,10 +2,11 @@ in vec2 finalUV;
 in vec3 finalSurfaceNormal;
 in vec3 finalToLightVector;
 in vec3 finalCameraVector;
-in sampler2D textureSampler;
-in vec3 lightColour;
-in float shineDamper;
-in float reflectivity;
+
+uniform sampler2D textureSampler;
+uniform vec3 lightColour;
+uniform float shineDamper;
+uniform float reflectivity;
 
 out vec4 out_Colour;
 

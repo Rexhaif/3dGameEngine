@@ -28,7 +28,7 @@ public class StringUtil {
     }
 
     public static String packageToString(Class object) {
-        return "/" + (object.getPackage().toString().split(" ")[1].replace(".", "/")) + "/";
+        return "/" + (object.getPackage().toString().split("\\s+")[1].replace(".", "/")) + "/";
     }
 
     public static String replace(String str, int index, int length, String source) {

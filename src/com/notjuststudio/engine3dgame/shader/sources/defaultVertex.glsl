@@ -1,10 +1,11 @@
 in vec3 vertexPos;
 in vec2 vertexUv;
 in vec3 vertexNorm;
-in mat4 transformationMatrix;
-in mat4 projectionMatrix;
-in mat4 viewMatrix;
-in vec3 lightPosition;
+
+uniform mat4 transformationMatrix;
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform vec3 lightPosition;
 
 out vec2 uv;
 out vec3 surfaceNormal;
