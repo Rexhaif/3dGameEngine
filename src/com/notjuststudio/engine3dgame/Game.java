@@ -1,19 +1,21 @@
 package com.notjuststudio.engine3dgame;
 
-import com.notjuststudio.engine3dgame.attributes.Light;
-import com.notjuststudio.engine3dgame.attributes.RenderModel;
-import com.notjuststudio.engine3dgame.attributes.Script;
+import com.notjuststudio.engine3dgame.attributes.*;
 import com.notjuststudio.engine3dgame.attributes.model.ModelData;
 import com.notjuststudio.engine3dgame.attributes.model.ModelTexture;
 import com.notjuststudio.engine3dgame.attributes.scripts.PyScript;
+import com.notjuststudio.engine3dgame.data.TextureData;
+import com.notjuststudio.engine3dgame.display.DisplayManager;
+import com.notjuststudio.engine3dgame.display.Loader;
 import com.notjuststudio.engine3dgame.osfConverter.OSFLoader;
 import com.notjuststudio.engine3dgame.osfConverter.VAOContainer;
 import com.notjuststudio.engine3dgame.render.MasterRenderer;
+import com.notjuststudio.engine3dgame.shader.DefaultShader;
+import com.notjuststudio.engine3dgame.shader.GUIShader;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
-import org.lwjgl.input.Keyboard;
+import com.notjuststudio.engine3dgame.shader.SkyboxShader;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
 import org.python.util.PythonInterpreter;
 
 /**
@@ -29,8 +31,8 @@ public class Game {
 
             DisplayManager.createDisplay(false, false);
 
-            pythonInterpreter.exec("from com.notjuststudio.engine3dgame import DisplayManager");
-            pythonInterpreter.exec("from com.notjuststudio.engine3dgame import Entity");
+            pythonInterpreter.exec("from com.notjuststudio.engine3dgame.display import DisplayManager");
+            pythonInterpreter.exec("from com.notjuststudio.engine3dgame.attributes import Entity");
             pythonInterpreter.exec("from org.lwjgl.input import Keyboard");
             pythonInterpreter.exec("from com.notjuststudio.engine3dgame.attributes import Camera");
             pythonInterpreter.exec("from com.notjuststudio.engine3dgame.util import MathUtil");
@@ -129,19 +131,26 @@ public class Game {
             SkyboxShader skyboxShader = new SkyboxShader();
 
             TextureData data = Loader.decodeTextureFile("res/steam.png");
-            Entity guiKeeper = new Entity().setPosition(DisplayManager.getWidth() / 2, DisplayManager.getHeight() / 2, 0)
-                    .addAttribute(new GUI(data, new Vector2f(0, 0), new GUIShader()))
+            TextureData another = Loader.decodeTextureFile( "res/5734a6bbd72df154a5ab4de9.png");
+            Entity guiKeeper = new Entity().setPosition(DisplayManager.getWidth() / 2, DisplayManager.getHeight() / 2, 0).setScale(2,1,1)
+                    .addAttribute(new GUI(another, new Vector2f(0, 0), new GUIShader()))
                     .addAttribute(new GUI(data, new Vector2f(data.getWidth() / 2, data.getHeight() / 2), new GUIShader()))
-                    .addAttribute(new GUI(data, new Vector2f(data.getWidth(), data.getHeight()), new GUIShader()));
+                    .addAttribute(new GUI(another, new Vector2f(data.getWidth(), data.getHeight()), new GUIShader()))
+                    .addAttribute(new Script("GuiCmd", "class GuiCmd(Script):\n" +
+                            "    def step(self):\n" +
+                            "        if Keyboard.isKeyDown(Keyboard.KEY_Z):\n" +
+                            "            self.entity.addRotationSilent(-math.pi/4 * DisplayManager.getFrameTimeSeconds(), self.entity.getTop())\n" +
+                            "        if Keyboard.isKeyDown(Keyboard.KEY_C):\n" +
+                            "            self.entity.addRotationSilent(math.pi/4 * DisplayManager.getFrameTimeSeconds(), self.entity.getTop())\n" +
+                            "        "));
 
-            MasterRenderer.preload(light);
             MasterRenderer.setSkybox(Loader.loadCubeMap("res/skybox/"), skyboxShader);
 
             for (PyScript script : Script.getScripts()) {
                 script.init();
             }
 
-            MasterRenderer.init();
+            MasterRenderer.preload(light);
 
             while (!DisplayManager.isCloseRequested()) {
 

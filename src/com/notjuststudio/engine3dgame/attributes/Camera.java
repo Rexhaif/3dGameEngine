@@ -1,6 +1,5 @@
 package com.notjuststudio.engine3dgame.attributes;
 
-import com.notjuststudio.engine3dgame.Entity;
 import com.notjuststudio.engine3dgame.util.MathUtil;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;

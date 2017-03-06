@@ -1,11 +1,10 @@
-package com.notjuststudio.engine3dgame;
+package com.notjuststudio.engine3dgame.display;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.*;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.util.*;
 
 import java.util.*;
 import java.util.List;

@@ -1,13 +1,12 @@
-package com.notjuststudio.engine3dgame;
+package com.notjuststudio.engine3dgame.shader;
 
+import com.notjuststudio.engine3dgame.attributes.Entity;
 import com.notjuststudio.engine3dgame.attributes.RenderModel;
 import com.notjuststudio.engine3dgame.attributes.model.ModelTexture;
-import com.notjuststudio.engine3dgame.shader.ShaderProgram;
-import com.notjuststudio.engine3dgame.shader.ShadersBuilder;
-import com.notjuststudio.engine3dgame.shader.ShadersContainer;
+import com.notjuststudio.engine3dgame.shader.sources.ShadersBuilder;
+import com.notjuststudio.engine3dgame.shader.sources.ShadersContainer;
 import com.notjuststudio.engine3dgame.shader.sources.CodeBlock;
 import org.lwjgl.util.vector.Matrix3f;
-import org.lwjgl.util.vector.Matrix4f;
 
 /**
  * Created by Georgy on 05.03.2017.
@@ -16,7 +15,7 @@ public class GUIShader extends ShaderProgram{
 
     private int location_transformationMatrix;
 
-    protected GUIShader() {
+    public GUIShader() {
         super(createContainer());
     }
 

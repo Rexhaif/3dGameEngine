@@ -1,7 +1,6 @@
 package com.notjuststudio.engine3dgame.attributes;
 
-import com.notjuststudio.engine3dgame.Entity;
-import com.notjuststudio.engine3dgame.Loader;
+import com.notjuststudio.engine3dgame.display.Loader;
 import com.notjuststudio.engine3dgame.attributes.model.ModelData;
 import com.notjuststudio.engine3dgame.attributes.model.ModelTexture;
 

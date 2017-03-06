@@ -1,4 +1,4 @@
-package com.notjuststudio.engine3dgame;
+package com.notjuststudio.engine3dgame.data;
 
 import java.nio.ByteBuffer;
 

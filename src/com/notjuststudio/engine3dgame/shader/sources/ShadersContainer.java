@@ -1,6 +1,4 @@
-package com.notjuststudio.engine3dgame.shader;
-
-import java.util.Objects;
+package com.notjuststudio.engine3dgame.shader.sources;
 
 /**
  * Created by George on 06.01.2017.

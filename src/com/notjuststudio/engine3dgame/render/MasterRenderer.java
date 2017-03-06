@@ -1,17 +1,12 @@
 package com.notjuststudio.engine3dgame.render;
 
-import com.notjuststudio.engine3dgame.GUIRenderer;
-import com.notjuststudio.engine3dgame.Loader;
-import com.notjuststudio.engine3dgame.SkyboxShader;
-import com.notjuststudio.engine3dgame.attributes.Camera;
+import com.notjuststudio.engine3dgame.display.Loader;
 import com.notjuststudio.engine3dgame.attributes.Light;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
-import com.notjuststudio.engine3dgame.util.MathUtil;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.util.vector.Matrix4f;
 
 /**
  * Created by George on 07.01.2017.
@@ -52,14 +47,17 @@ public class MasterRenderer {
     }
 
     public static void preload(Light globalLight) {
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glCullFace(GL11.GL_BACK);
         light = globalLight;
+        init();
     }
 
     private static void prepare() {
         if (skyboxID == 0)
             GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_BLEND);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glClearColor(0, 0, 1, 1);
     }
@@ -74,6 +72,7 @@ public class MasterRenderer {
         for (Renderer renderer : renderers) {
             renderer.render();
         }
+        GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
         for (Renderer renderer : renderersGUI) {
@@ -99,7 +98,7 @@ public class MasterRenderer {
         Loader.bindDefaultVAO();
     }
 
-    public static void init() {
+    private static void init() {
         prepareSkybox();
         prepareGUI();
     }

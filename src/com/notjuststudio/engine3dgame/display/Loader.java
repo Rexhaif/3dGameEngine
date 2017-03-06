@@ -1,6 +1,8 @@
-package com.notjuststudio.engine3dgame;
+package com.notjuststudio.engine3dgame.display;
 
 import com.notjuststudio.engine3dgame.attributes.model.ModelData;
+import com.notjuststudio.engine3dgame.data.CubeMapData;
+import com.notjuststudio.engine3dgame.data.TextureData;
 import com.notjuststudio.engine3dgame.osfConverter.VAOContainer;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import org.lwjgl.BufferUtils;

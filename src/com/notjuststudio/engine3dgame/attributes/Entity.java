@@ -1,6 +1,5 @@
-package com.notjuststudio.engine3dgame;
+package com.notjuststudio.engine3dgame.attributes;
 
-import com.notjuststudio.engine3dgame.attributes.Attribute;
 import com.notjuststudio.engine3dgame.util.MathUtil;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;

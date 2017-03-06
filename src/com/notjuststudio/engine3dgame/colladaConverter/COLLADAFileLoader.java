@@ -1,6 +1,6 @@
 package com.notjuststudio.engine3dgame.colladaConverter;
 
-import com.notjuststudio.engine3dgame.Loader;
+import com.notjuststudio.engine3dgame.display.Loader;
 import com.notjuststudio.engine3dgame.attributes.model.ModelData;
 import com.notjuststudio.engine3dgame.colladaConverter.colladaschema.*;
 import com.notjuststudio.engine3dgame.osfConverter.VAOContainer;

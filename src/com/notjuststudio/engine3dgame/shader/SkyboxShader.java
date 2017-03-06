@@ -1,11 +1,11 @@
-package com.notjuststudio.engine3dgame;
+package com.notjuststudio.engine3dgame.shader;
 
+import com.notjuststudio.engine3dgame.attributes.Entity;
 import com.notjuststudio.engine3dgame.attributes.Camera;
 import com.notjuststudio.engine3dgame.attributes.RenderModel;
 import com.notjuststudio.engine3dgame.attributes.model.ModelTexture;
-import com.notjuststudio.engine3dgame.shader.ShaderProgram;
-import com.notjuststudio.engine3dgame.shader.ShadersBuilder;
-import com.notjuststudio.engine3dgame.shader.ShadersContainer;
+import com.notjuststudio.engine3dgame.shader.sources.ShadersBuilder;
+import com.notjuststudio.engine3dgame.shader.sources.ShadersContainer;
 import com.notjuststudio.engine3dgame.shader.sources.CodeBlock;
 import com.notjuststudio.engine3dgame.util.MathUtil;
 import org.lwjgl.util.vector.Matrix4f;

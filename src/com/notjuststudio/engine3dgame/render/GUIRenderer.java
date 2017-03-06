@@ -1,7 +1,7 @@
-package com.notjuststudio.engine3dgame;
+package com.notjuststudio.engine3dgame.render;
 
-import com.notjuststudio.engine3dgame.render.MasterRenderer;
-import com.notjuststudio.engine3dgame.render.Renderer;
+import com.notjuststudio.engine3dgame.shader.GUIShader;
+import com.notjuststudio.engine3dgame.attributes.GUI;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;

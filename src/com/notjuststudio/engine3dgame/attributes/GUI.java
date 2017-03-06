@@ -1,6 +1,8 @@
-package com.notjuststudio.engine3dgame;
+package com.notjuststudio.engine3dgame.attributes;
 
-import com.notjuststudio.engine3dgame.attributes.Attribute;
+import com.notjuststudio.engine3dgame.display.DisplayManager;
+import com.notjuststudio.engine3dgame.display.Loader;
+import com.notjuststudio.engine3dgame.data.TextureData;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 import com.notjuststudio.engine3dgame.util.MathUtil;
 import org.lwjgl.util.vector.Matrix3f;
@@ -78,7 +80,8 @@ public class GUI extends Attribute {
         Vector2f position = new Vector2f(position3f.getX(), position3f.getY());
 
         Quaternion rotation = entity.getWorldRotation();
-        float angle = (float)Math.acos(rotation.getW()) * 2 * Math.signum(rotation.getZ());
+        double angleHalf = Math.acos(rotation.getW());
+        float angle = (float)(Double.isNaN(angleHalf) ? Math.PI : angleHalf) * 2 * (rotation.getY() >= 0 ? 1 : -1);
 
         Vector3f scale3f = entity.getScale();
         Vector2f scale = new Vector2f(scale3f.getX(), scale3f.getY());

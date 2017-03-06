@@ -1,6 +1,6 @@
 package com.notjuststudio.engine3dgame.attributes.model;
 
-import com.notjuststudio.engine3dgame.Entity;
+import com.notjuststudio.engine3dgame.attributes.Entity;
 import org.lwjgl.util.vector.Matrix4f;
 
 import java.util.HashMap;

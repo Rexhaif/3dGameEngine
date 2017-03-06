@@ -1,7 +1,5 @@
 package com.notjuststudio.engine3dgame.attributes;
 
-import com.notjuststudio.engine3dgame.Entity;
-
 /**
  * Created by George on 06.01.2017.
  */

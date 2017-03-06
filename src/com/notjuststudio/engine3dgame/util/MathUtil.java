@@ -1,13 +1,6 @@
 package com.notjuststudio.engine3dgame.util;
 
-import com.notjuststudio.engine3dgame.DisplayManager;
-import com.notjuststudio.engine3dgame.attributes.Camera;
 import org.lwjgl.util.vector.*;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 /**
  * Created by George on 06.01.2017.

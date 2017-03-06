@@ -2,7 +2,6 @@ package com.notjuststudio.engine3dgame.attributes;
 
 import com.notjuststudio.engine3dgame.Game;
 import com.notjuststudio.engine3dgame.attributes.scripts.PyScript;
-import com.notjuststudio.engine3dgame.Entity;
 import org.python.core.PyObject;
 
 import java.util.HashMap;

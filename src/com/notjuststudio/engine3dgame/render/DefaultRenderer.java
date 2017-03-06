@@ -1,6 +1,6 @@
 package com.notjuststudio.engine3dgame.render;
 
-import com.notjuststudio.engine3dgame.Entity;
+import com.notjuststudio.engine3dgame.attributes.Entity;
 import com.notjuststudio.engine3dgame.attributes.RenderModel;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 import org.lwjgl.opengl.GL11;

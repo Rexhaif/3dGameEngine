@@ -1,6 +1,4 @@
-package com.notjuststudio.engine3dgame.shader;
-
-import com.notjuststudio.engine3dgame.shader.sources.CodeBlock;
+package com.notjuststudio.engine3dgame.shader.sources;
 
 import java.util.ArrayList;
 import java.util.Arrays;

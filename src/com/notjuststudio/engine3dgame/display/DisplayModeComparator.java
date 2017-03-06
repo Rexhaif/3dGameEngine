@@ -1,4 +1,4 @@
-package com.notjuststudio.engine3dgame;
+package com.notjuststudio.engine3dgame.display;
 
 import org.lwjgl.opengl.DisplayMode;
 

@@ -1,8 +1,9 @@
 package com.notjuststudio.engine3dgame.shader;
 
-import com.notjuststudio.engine3dgame.Entity;
+import com.notjuststudio.engine3dgame.attributes.Entity;
 import com.notjuststudio.engine3dgame.attributes.RenderModel;
 import com.notjuststudio.engine3dgame.attributes.model.ModelTexture;
+import com.notjuststudio.engine3dgame.shader.sources.ShadersContainer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;

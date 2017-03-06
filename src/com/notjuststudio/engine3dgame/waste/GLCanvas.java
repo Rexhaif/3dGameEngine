@@ -1,15 +1,18 @@
 package com.notjuststudio.engine3dgame.waste;
 
-import com.notjuststudio.engine3dgame.*;
 import com.notjuststudio.engine3dgame.attributes.Light;
 import com.notjuststudio.engine3dgame.attributes.RenderModel;
 import com.notjuststudio.engine3dgame.attributes.model.ModelData;
 import com.notjuststudio.engine3dgame.attributes.model.ModelTexture;
-import com.notjuststudio.engine3dgame.Entity;
+import com.notjuststudio.engine3dgame.attributes.Entity;
+import com.notjuststudio.engine3dgame.display.DisplayManager;
+import com.notjuststudio.engine3dgame.display.Loader;
 import com.notjuststudio.engine3dgame.osfConverter.OSFLoader;
 import com.notjuststudio.engine3dgame.osfConverter.VAOContainer;
 import com.notjuststudio.engine3dgame.render.MasterRenderer;
+import com.notjuststudio.engine3dgame.shader.DefaultShader;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
+import com.notjuststudio.engine3dgame.shader.SkyboxShader;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.*;
