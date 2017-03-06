@@ -37,6 +37,7 @@ public class Game {
 
             DisplayManager.createDisplay(false, false);
 
+            pythonInterpreter.exec("from com.notjuststudio.engine3dgame import Game");
             pythonInterpreter.exec("from com.notjuststudio.engine3dgame.display import DisplayManager");
             pythonInterpreter.exec("from com.notjuststudio.engine3dgame.attributes import Entity");
             pythonInterpreter.exec("from org.lwjgl.input import Keyboard");
@@ -57,6 +58,7 @@ public class Game {
 
             Entity scriptKeeper = new Entity().addAttribute(new Script("Controller","class Controller(Script):\n" +
                     "    def step(self):\n" +
+                    "        Game.cmds.add('print(\"I\\'m a console script\")')\n" +
                     "        if Keyboard.isKeyDown(Keyboard.KEY_1):\n" +
                     "            DisplayManager.setFullscreenState(DisplayManager.WINDOWED)\n" +
                     "            DisplayManager.updateDisplaySetting()\n" +
@@ -160,10 +162,13 @@ public class Game {
 
             while (!DisplayManager.isCloseRequested()) {
 
+                Queue<String> tmpCMDS = new LinkedList<>(cmds);
+                cmds.clear();
+
                 console:
                 while(true) {
                     try {
-                        pythonInterpreter.exec(cmds.remove());
+                        pythonInterpreter.exec(tmpCMDS.remove());
                     } catch (PyException e) {
                         e.printStackTrace();
                     } catch (NoSuchElementException e) {
