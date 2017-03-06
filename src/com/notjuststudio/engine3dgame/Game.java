@@ -16,7 +16,12 @@ import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 import com.notjuststudio.engine3dgame.shader.SkyboxShader;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
+import org.python.core.PyException;
 import org.python.util.PythonInterpreter;
+
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /**
  * Created by George on 06.01.2017.
@@ -24,6 +29,7 @@ import org.python.util.PythonInterpreter;
 public class Game {
 
     public static PythonInterpreter pythonInterpreter = new PythonInterpreter();
+    public static Queue<String> cmds = new LinkedList<>();
 
     public static void main(String[] args) {
 
@@ -153,6 +159,17 @@ public class Game {
             MasterRenderer.preload(light);
 
             while (!DisplayManager.isCloseRequested()) {
+
+                console:
+                while(true) {
+                    try {
+                        pythonInterpreter.exec(cmds.remove());
+                    } catch (PyException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchElementException e) {
+                        break console;
+                    }
+                }
 
                 for (PyScript script : Script.getScripts()) {
                     script.step();
