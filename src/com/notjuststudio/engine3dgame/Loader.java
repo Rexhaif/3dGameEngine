@@ -39,50 +39,60 @@ public class Loader {
         return new ModelData(loadToVAO(container), container.getIndices().remaining());
     }
 
-    public static int createCubeMap(float size) {
+    public static int createGUI() {
+        int vaoID = createVAO();
+        float[] data = {-1, 1, -1, -1, 1, 1, 1, -1};
+        List<Integer> vboIDs = new ArrayList<>();
+        vboIDs.add(storeDataInAttributeList(0, 2, storeDataInFloatBuffer(data)));
+        bindDefaultVAO();
+        vaoList.put(vaoID, vboIDs);
+        return vaoID;
+    }
+
+    public static int createCubeMap() {
         int vaoID = createVAO();
         float[] data = {
-                -size,  size, -size,
-                -size, -size, -size,
-                size, -size, -size,
-                size, -size, -size,
-                size,  size, -size,
-                -size,  size, -size,
+                -(float) 1, (float) 1, -(float) 1,
+                -(float) 1, -(float) 1, -(float) 1,
+                (float) 1, -(float) 1, -(float) 1,
+                (float) 1, -(float) 1, -(float) 1,
+                (float) 1, (float) 1, -(float) 1,
+                -(float) 1, (float) 1, -(float) 1,
 
-                -size, -size,  size,
-                -size, -size, -size,
-                -size,  size, -size,
-                -size,  size, -size,
-                -size,  size,  size,
-                -size, -size,  size,
+                -(float) 1, -(float) 1, (float) 1,
+                -(float) 1, -(float) 1, -(float) 1,
+                -(float) 1, (float) 1, -(float) 1,
+                -(float) 1, (float) 1, -(float) 1,
+                -(float) 1, (float) 1, (float) 1,
+                -(float) 1, -(float) 1, (float) 1,
 
-                size, -size, -size,
-                size, -size,  size,
-                size,  size,  size,
-                size,  size,  size,
-                size,  size, -size,
-                size, -size, -size,
+                (float) 1, -(float) 1, -(float) 1,
+                (float) 1, -(float) 1, (float) 1,
+                (float) 1, (float) 1, (float) 1,
+                (float) 1, (float) 1, (float) 1,
+                (float) 1, (float) 1, -(float) 1,
+                (float) 1, -(float) 1, -(float) 1,
 
-                -size, -size,  size,
-                -size,  size,  size,
-                size,  size,  size,
-                size,  size,  size,
-                size, -size,  size,
-                -size, -size,  size,
+                -(float) 1, -(float) 1, (float) 1,
+                -(float) 1, (float) 1, (float) 1,
+                (float) 1, (float) 1, (float) 1,
+                (float) 1, (float) 1, (float) 1,
+                (float) 1, -(float) 1, (float) 1,
+                -(float) 1, -(float) 1, (float) 1,
 
-                -size,  size, -size,
-                size,  size, -size,
-                size,  size,  size,
-                size,  size,  size,
-                -size,  size,  size,
-                -size,  size, -size,
+                -(float) 1, (float) 1, -(float) 1,
+                (float) 1, (float) 1, -(float) 1,
+                (float) 1, (float) 1, (float) 1,
+                (float) 1, (float) 1, (float) 1,
+                -(float) 1, (float) 1, (float) 1,
+                -(float) 1, (float) 1, -(float) 1,
 
-                -size, -size, -size,
-                -size, -size,  size,
-                size, -size, -size,
-                size, -size, -size,
-                -size, -size,  size,
-                size, -size,  size
+                -(float) 1, -(float) 1, -(float) 1,
+                -(float) 1, -(float) 1, (float) 1,
+                (float) 1, -(float) 1, -(float) 1,
+                (float) 1, -(float) 1, -(float) 1,
+                -(float) 1, -(float) 1, (float) 1,
+                (float) 1, -(float) 1, (float) 1
         };
         List<Integer> vboIDs = new ArrayList<>();
         vboIDs.add(storeDataInAttributeList(0, 3, storeDataInFloatBuffer(data)));
@@ -160,7 +170,7 @@ public class Loader {
         return texID;
     }
 
-    private static TextureData decodeTextureFile(String fileName) {
+    public static TextureData decodeTextureFile(String fileName) {
         int width = 0;
         int height = 0;
         ByteBuffer buffer = null;
@@ -182,11 +192,14 @@ public class Loader {
     }
 
     public static int loadTexture(String fileName) {
+        return loadTexture(decodeTextureFile(fileName));
+    }
+
+    public static int loadTexture(TextureData data) {
         int texID = GL11.glGenTextures();
         GL13.glActiveTexture(texID);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
 
-        TextureData data = decodeTextureFile(fileName);
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, data.getWidth(), data.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data.getBuffer());
 
         GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
@@ -197,6 +210,9 @@ public class Loader {
             float amount  = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
             GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, amount);
         }
+
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 
         textureList.add(texID);
         return texID;

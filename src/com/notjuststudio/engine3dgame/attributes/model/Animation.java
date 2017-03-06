@@ -18,11 +18,11 @@ public class Animation {
         this.bones = bones;
     }
 
-    public void resetToDefaultAnimation() {
-        for (Bone bone : bones) {
-            bone.entity.setTransformation(bone.frames.get(0f));
-        }
-    }
+//    public void resetToDefaultAnimation() {
+//        for (Bone bone : bones) {
+//            bone.entity.setTransformation(bone.frames.get(0f));
+//        }
+//    }
 
     public Bone[] getBones() {
         return bones;

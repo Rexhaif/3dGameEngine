@@ -52,12 +52,8 @@ public class RenderModel extends Attribute{
         }
     }
 
-    public static Set<RenderModel> getKeySet() {
-        return models.keySet();
-    }
-
-    public static List<Entity> getList(RenderModel renderModel) {
-        return models.get(renderModel);
+    public static Map<RenderModel, List<Entity>> getModelsMap() {
+        return models;
     }
 
     @Override

@@ -1,14 +1,15 @@
 package com.notjuststudio.engine3dgame.render;
 
 import com.notjuststudio.engine3dgame.Entity;
-import com.notjuststudio.engine3dgame.DefaultProgram;
-import com.notjuststudio.engine3dgame.attributes.Camera;
 import com.notjuststudio.engine3dgame.attributes.RenderModel;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by George on 07.01.2017.
@@ -33,17 +34,17 @@ public class DefaultRenderer extends Renderer {
         GL20.glEnableVertexAttribArray(2);
     }
 
-    private void prepareKeeper(Entity entity) {
+    private void prepareEntity(Entity entity) {
         activeRenderModel.getTexture().getShaderProgram().loadPrepareEntity(entity);
     }
 
     @Override
     public void render() {
-        for (RenderModel renderModel : RenderModel.getKeySet()) {
-            prepareModel(renderModel);
-            for (Entity entity : RenderModel.getList(renderModel)) {
-                prepareKeeper(entity);
-                GL11.glDrawElements(GL11.GL_TRIANGLES, renderModel.getData().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+        for (Map.Entry<RenderModel, List<Entity>> entry : RenderModel.getModelsMap().entrySet()) {
+            prepareModel(entry.getKey());
+            for (Entity entity : entry.getValue()) {
+                prepareEntity(entity);
+                GL11.glDrawElements(GL11.GL_TRIANGLES, entry.getKey().getData().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
             }
             unbind();
             ShaderProgram.useNone();

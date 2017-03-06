@@ -1,6 +1,5 @@
 package com.notjuststudio.engine3dgame.attributes.model;
 
-import com.notjuststudio.engine3dgame.colladaConverter.colladaschema.Matrix;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;
 import org.lwjgl.util.vector.Vector3f;

@@ -20,7 +20,8 @@ public class ShadersBuilder {
     private List<CodeBlock> geometryCodes = new ArrayList<>();
     private List<CodeBlock> fragmentCodes = new ArrayList<>();
 
-    public ShadersBuilder() {}
+    public ShadersBuilder() {
+    }
 
     public ShadersBuilder setHeader(int version) {
         this.version = version;
@@ -42,13 +43,15 @@ public class ShadersBuilder {
         return this;
     }
 
-    static final String VERTEX_POS = "vec3 vertexPos";
+
+    static final String VERTEX_POS_2 = "vec2 vertexPos";
+    static final String VERTEX_POS_3 = "vec3 vertexPos";
     static final String VERTEX_UV = "vec2 vertexUv";
     static final String VERTEX_NORM = "vec3 vertexNorm";
     static final String VERTEX_INDICES = "ivec4 vertexIndex";
     static final String VERTEX_WEIGHTS = "vec4 vertexWeight";
 
-    static final String[] VERTEX_INPUT = {VERTEX_POS, VERTEX_UV, VERTEX_NORM, VERTEX_INDICES, VERTEX_WEIGHTS};
+    static final String[] VERTEX_INPUT = {VERTEX_POS_2, VERTEX_POS_3, VERTEX_UV, VERTEX_NORM, VERTEX_INDICES, VERTEX_WEIGHTS};
 
     private String makeHeader() {
         return "#version " + Integer.toString(version) + " core\n";
@@ -58,8 +61,11 @@ public class ShadersBuilder {
         StringBuilder result = new StringBuilder();
         for (String input : layouts) {
             switch (input) {
-                case VERTEX_POS:
-                    result.append("layout(location = 0) in " + VERTEX_POS + ";\n");
+                case VERTEX_POS_2:
+                    result.append("layout(location = 0) in " + VERTEX_POS_2 + ";\n");
+                    break;
+                case VERTEX_POS_3:
+                    result.append("layout(location = 0) in " + VERTEX_POS_3 + ";\n");
                     break;
                 case VERTEX_UV:
                     result.append("layout(location = 1) in " + VERTEX_UV + ";\n");
@@ -107,7 +113,7 @@ public class ShadersBuilder {
         StringBuilder result = new StringBuilder();
         result.append(
                 "layout ( triangles ) in;\n" +
-                "layout ( triangle_strip, max_vertices = 3) out;\n"
+                        "layout ( triangle_strip, max_vertices = 3) out;\n"
         );
         return result;
     }
@@ -133,14 +139,19 @@ public class ShadersBuilder {
     }
 
     public ShadersContainer build() {
+        boolean geom = !geometryCodes.isEmpty();
+
         ShadersContainer result = new ShadersContainer();
         String header = makeHeader();
 
         StringBuilder vertex = new StringBuilder();
         vertex.append(header);
 
-        StringBuilder geometry = new StringBuilder();
-        geometry.append(header);
+        StringBuilder geometry = null;
+        if (geom) {
+            geometry = new StringBuilder();
+            geometry.append(header);
+        }
 
         StringBuilder fragment = new StringBuilder();
         fragment.append(header);
@@ -166,20 +177,26 @@ public class ShadersBuilder {
             addUnrepeatedString(fragOut, outputsTmp);
         }
 
-        Collections.reverse(reversed = new ArrayList<>(geometryCodes));
+        List<String> geomOut = null;
+        List<String> geomIn = null;
 
-        List<String> geomOut = new ArrayList<>();
-        List<String> geomIn = new ArrayList<>();
+        if (geom) {
+            Collections.reverse(reversed = new ArrayList<>(geometryCodes));
 
-        for (CodeBlock code : reversed) {
-            outputsTmp = new ArrayList<>(Arrays.asList(code.getOutput()));
-            inputsTmp = new ArrayList<>(Arrays.asList(code.getInput()));
+            geomOut = new ArrayList<>();
+            geomIn = new ArrayList<>();
 
-            deleteEqualString(outputsTmp, inputsTmp);
-            deleteEqualString(outputsTmp, geomIn);
+            for (CodeBlock code : reversed) {
+                outputsTmp = new ArrayList<>(Arrays.asList(code.getOutput()));
+                inputsTmp = new ArrayList<>(Arrays.asList(code.getInput()));
 
-            addUnrepeatedString(geomIn, inputsTmp);
-            addUnrepeatedString(geomOut, outputsTmp);
+                deleteEqualString(outputsTmp, inputsTmp);
+                deleteEqualString(outputsTmp, geomIn);
+
+                addUnrepeatedString(geomIn, inputsTmp);
+                addUnrepeatedString(geomOut, outputsTmp);
+            }
+
         }
 
         Collections.reverse(reversed = new ArrayList<>(vertexCodes));
@@ -208,16 +225,21 @@ public class ShadersBuilder {
         String[] vertOutArray = vertOut.toArray(new String[vertOut.size()]);
         vertex.append(addOutput(vertOutArray));
 
-        geometry.append(addGeometryLayout());
-        String[] geomInArray = createGeometryInput(vertOutArray);
-        geometry.append(addInput(geomInArray));
+        if (geom) {
+            geometry.append(addGeometryLayout());
+            String[] geomInArray = createGeometryInput(vertOutArray);
+            geometry.append(addInput(geomInArray));
 
-        uni = createMinusString(geomIn, Arrays.asList(geomInArray));
-        geometry.append(addUniform(uni.toArray(new String[uni.size()])));
+            uni = createMinusString(geomIn, Arrays.asList(geomInArray));
+            geometry.append(addUniform(uni.toArray(new String[uni.size()])));
 
-        geometry.append(addOutput(geomOut.toArray(new String[geomOut.size()])));
+            geometry.append(addOutput(geomOut.toArray(new String[geomOut.size()])));
+        }
 
-        uni = createMinusString(fragIn, geomOut);
+        if (geom)
+            uni = createMinusString(fragIn, geomOut);
+        else
+            uni = createMinusString(fragIn, vertOut);
         in = createMinusString(fragIn, uni);
 
         fragment.append(addInput(in.toArray(new String[in.size()])));
@@ -225,11 +247,18 @@ public class ShadersBuilder {
         fragment.append(addOutput(fragOut.toArray(new String[fragOut.size()])));
 
         vertex.append(makeBody(vertexCodes));
-        geometry.append(makeBody(geometryCodes));
+        if (geom)
+            geometry.append(makeBody(geometryCodes));
         fragment.append(makeBody(fragmentCodes));
 
+//        System.out.println(vertex.toString());
+//        if (geom)
+//            System.out.println(geometry.toString());
+//        System.out.println(fragment.toString());
+
         result.setVertexShader(vertex.toString());
-        result.setGeometryShader(geometry.toString());
+        if (geom)
+            result.setGeometryShader(geometry.toString());
         result.setFragmentShader(fragment.toString());
 
         return result;

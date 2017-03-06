@@ -31,6 +31,7 @@ public class Light extends Attribute {
     @Override
     public void delete() {
         super.delete();
+        allLights.remove(this);
 
     }
 }

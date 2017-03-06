@@ -1,5 +1,6 @@
 package com.notjuststudio.engine3dgame.render;
 
+import com.notjuststudio.engine3dgame.GUIRenderer;
 import com.notjuststudio.engine3dgame.Loader;
 import com.notjuststudio.engine3dgame.SkyboxShader;
 import com.notjuststudio.engine3dgame.attributes.Camera;
@@ -21,14 +22,27 @@ public class MasterRenderer {
     private static int cubeID = 0;
     private static ShaderProgram skyboxShader = null;
 
+    private static int guiID = 0;
+
+    private static void prepareSkybox() {
+        MasterRenderer.cubeID = Loader.createCubeMap();
+    }
+
     public static void setSkybox(int skyboxID, ShaderProgram skyboxShader) {
         MasterRenderer.skyboxID = skyboxID;
-        cubeID = Loader.createCubeMap(1);
         MasterRenderer.skyboxShader = skyboxShader;
+    }
+
+    private static void prepareGUI() {
+        MasterRenderer.guiID = Loader.createGUI();
     }
 
     private static Renderer[] renderers = {
             new DefaultRenderer()
+    };
+
+    private static Renderer[] renderersGUI = {
+            new GUIRenderer()
     };
 
     private static Light light = null;
@@ -47,7 +61,7 @@ public class MasterRenderer {
         if (skyboxID == 0)
             GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-        GL11.glClearColor(0,0,1,1);
+        GL11.glClearColor(0, 0, 1, 1);
     }
 
     public static void render() {
@@ -60,13 +74,17 @@ public class MasterRenderer {
         for (Renderer renderer : renderers) {
             renderer.render();
         }
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+        for (Renderer renderer : renderersGUI) {
+            renderer.render();
+        }
+
     }
 
     private static void renderSkybox() {
         skyboxShader.useThis();
-        ((SkyboxShader)skyboxShader).loadProjectionMatrix(Camera.getMainCamera().getProjectionMatrix());
-        Matrix4f matrix = MathUtil.createRotationMatrix(Camera.getMainCamera().getEntity().getRotation());
-        ((SkyboxShader)skyboxShader).loadViewMatrix(matrix);
+        skyboxShader.loadPrepareModel(null);
         GL30.glBindVertexArray(cubeID);
         GL20.glEnableVertexAttribArray(0);
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -79,5 +97,14 @@ public class MasterRenderer {
 
     public static void closeRender() {
         Loader.bindDefaultVAO();
+    }
+
+    public static void init() {
+        prepareSkybox();
+        prepareGUI();
+    }
+
+    public static int getGuiID() {
+        return guiID;
     }
 }

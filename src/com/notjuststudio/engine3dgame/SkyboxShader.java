@@ -1,11 +1,13 @@
 package com.notjuststudio.engine3dgame;
 
+import com.notjuststudio.engine3dgame.attributes.Camera;
 import com.notjuststudio.engine3dgame.attributes.RenderModel;
 import com.notjuststudio.engine3dgame.attributes.model.ModelTexture;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 import com.notjuststudio.engine3dgame.shader.ShadersBuilder;
 import com.notjuststudio.engine3dgame.shader.ShadersContainer;
 import com.notjuststudio.engine3dgame.shader.sources.CodeBlock;
+import com.notjuststudio.engine3dgame.util.MathUtil;
 import org.lwjgl.util.vector.Matrix4f;
 
 /**
@@ -30,11 +32,11 @@ public class SkyboxShader extends ShaderProgram {
     }
 
     public void loadProjectionMatrix(Matrix4f matrix){
-        super.loadMatrix(location_projectionMatrix, matrix);
+        super.loadMatrix4f(location_projectionMatrix, matrix);
     }
 
     public void loadViewMatrix(Matrix4f matrix){
-        super.loadMatrix(location_viewMatrix, matrix);
+        super.loadMatrix4f(location_viewMatrix, matrix);
     }
 
     @Override
@@ -50,7 +52,8 @@ public class SkyboxShader extends ShaderProgram {
 
     @Override
     public void loadPrepareModel(RenderModel renderModel) {
-
+        loadProjectionMatrix(Camera.getMainCamera().getProjectionMatrix());
+        loadViewMatrix(Matrix4f.transpose(MathUtil.createRotationMatrix(Camera.getMainCamera().getEntity().getRotation()), null));
     }
 
     @Override

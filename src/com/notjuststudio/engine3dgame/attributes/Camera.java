@@ -78,8 +78,8 @@ public class Camera extends Attribute{
 
         Entity entity = getEntity();
 
-        Matrix4f.mul(result, MathUtil.createRotationMatrix(entity.getRotation()), result);
-        Matrix4f.translate(entity.getPosition().negate(null), result, result);
+        Matrix4f.mul(Matrix4f.transpose(MathUtil.createRotationMatrix(entity.getRotation()), null), result , result);
+        Matrix4f.translate(entity.getWorldPosition().negate(null), result, result);
         viewMatrix = result;
     }
 

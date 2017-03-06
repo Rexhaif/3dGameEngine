@@ -7,6 +7,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
+import org.lwjgl.util.vector.Matrix3f;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -27,23 +28,29 @@ public abstract class ShaderProgram {
     private int geometryID;
     private int fragmentID;
 
-    private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
+    private static FloatBuffer matrix4fBuffer = BufferUtils.createFloatBuffer(16);
+    private static FloatBuffer matrix3fBuffer = BufferUtils.createFloatBuffer(9);
 
     protected ShaderProgram(ShadersContainer container) {
         vertexID = loadShader(GL20.GL_VERTEX_SHADER, container.getVertexShader());
-        geometryID = loadShader(GL32.GL_GEOMETRY_SHADER, container.getGeometryShader());
+        if (!container.getGeometryShader().isEmpty())
+            geometryID = loadShader(GL32.GL_GEOMETRY_SHADER, container.getGeometryShader());
+        else
+            geometryID = 0;
         fragmentID = loadShader(GL20.GL_FRAGMENT_SHADER, container.getFragmentShader());
         programID = GL20.glCreateProgram();
         GL20.glAttachShader(programID, vertexID);
-        GL20.glAttachShader(programID, geometryID);
+        if (geometryID != 0)
+            GL20.glAttachShader(programID, geometryID);
         GL20.glAttachShader(programID, fragmentID);
         GL20.glLinkProgram(programID);
         GL20.glDeleteShader(vertexID);
-        GL20.glDeleteShader(geometryID);
+        if (geometryID != 0)
+            GL20.glDeleteShader(geometryID);
         GL20.glDeleteShader(fragmentID);
         GL20.glValidateProgram(programID);
         getAllUniformLocation();
-        int[] shaders =  {vertexID, geometryID, fragmentID};
+        int[] shaders = {vertexID, geometryID, fragmentID};
         programs.put(programID, shaders);
     }
 
@@ -58,7 +65,8 @@ public abstract class ShaderProgram {
     public static void cleanUp() {
         for (Map.Entry<Integer, int[]> program : programs.entrySet()) {
             GL20.glDetachShader(program.getKey(), program.getValue()[0]);
-            GL20.glDetachShader(program.getKey(), program.getValue()[1]);
+            if (program.getValue()[1] != 0)
+                GL20.glDetachShader(program.getKey(), program.getValue()[1]);
             GL20.glDetachShader(program.getKey(), program.getValue()[2]);
             GL20.glDeleteProgram(program.getKey());
         }
@@ -66,7 +74,8 @@ public abstract class ShaderProgram {
 
     public void delete() {
         GL20.glDetachShader(programID, vertexID);
-        GL20.glDetachShader(programID, geometryID);
+        if (geometryID != 0)
+            GL20.glDetachShader(programID, geometryID);
         GL20.glDetachShader(programID, fragmentID);
         GL20.glDeleteProgram(programID);
         programs.remove(programID);
@@ -90,10 +99,16 @@ public abstract class ShaderProgram {
         GL20.glUniform1i(location, value ? 1 : 0);
     }
 
-    protected void loadMatrix(int location, Matrix4f value) {
-        value.store(matrixBuffer);
-        matrixBuffer.flip();
-        GL20.glUniformMatrix4(location, false, matrixBuffer);
+    protected void loadMatrix4f(int location, Matrix4f value) {
+        value.store(matrix4fBuffer);
+        matrix4fBuffer.flip();
+        GL20.glUniformMatrix4(location, false, matrix4fBuffer);
+    }
+
+    protected void loadMatrix3f(int location, Matrix3f value) {
+        value.store(matrix3fBuffer);
+        matrix3fBuffer.flip();
+        GL20.glUniformMatrix3(location, false, matrix3fBuffer);
     }
 
     private static int loadShader(int type, String source) {

@@ -14,7 +14,7 @@ import org.lwjgl.util.vector.Matrix4f;
 /**
  * Created by George on 06.01.2017.
  */
-public class DefaultProgram extends ShaderProgram {
+public class DefaultShader extends ShaderProgram {
 
     private int location_transformationMatrix;
     private int location_projectionMatrix;
@@ -24,7 +24,7 @@ public class DefaultProgram extends ShaderProgram {
     private int location_shineDamper;
     private int location_reflectivity;
 
-    public DefaultProgram() {
+    public DefaultShader() {
         super(createContainer());
     }
 
@@ -56,8 +56,8 @@ public class DefaultProgram extends ShaderProgram {
     @Override
     public void loadPrepareModel(RenderModel renderModel) {
         loadProjectionMatrix(Camera.getMainCamera().getProjectionMatrix());
-        loadViewMatrix(Camera.getMainCamera().getViewMatrix());
         loadLight(MasterRenderer.getLight());
+        loadViewMatrix(Camera.getMainCamera().getViewMatrix());
     }
 
     @Override
@@ -65,24 +65,24 @@ public class DefaultProgram extends ShaderProgram {
         loadTransformationMatrix(entity.getWorldTransformation());
     }
 
-    public void loadShineVariable(float damper, float reflectivity) {
+    private void loadShineVariable(float damper, float reflectivity) {
         super.loadFloat(location_shineDamper, damper);
         super.loadFloat(location_reflectivity, reflectivity);
     }
 
-    public void loadTransformationMatrix(Matrix4f matrix4f) {
-        super.loadMatrix(location_transformationMatrix, matrix4f);
+    private void loadTransformationMatrix(Matrix4f matrix4f) {
+        super.loadMatrix4f(location_transformationMatrix, matrix4f);
     }
 
-    public void loadProjectionMatrix(Matrix4f matrix4f) {
-        super.loadMatrix(location_projectionMatrix, matrix4f);
+    private void loadProjectionMatrix(Matrix4f matrix4f) {
+        super.loadMatrix4f(location_projectionMatrix, matrix4f);
     }
 
-    public void loadViewMatrix(Matrix4f matrix4f) {
-        super.loadMatrix(location_viewMatrix, matrix4f);
+    private void loadViewMatrix(Matrix4f matrix4f) {
+        super.loadMatrix4f(location_viewMatrix, matrix4f);
     }
 
-    public void loadLight(Light light) {
+    private void loadLight(Light light) {
         super.loadVector(location_lightPosition, light.getEntity().getPosition());
         super.loadVector(location_lightColour, light.getColour());
     }

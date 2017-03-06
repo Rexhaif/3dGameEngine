@@ -11,6 +11,8 @@ public abstract class Attribute implements Cloneable {
     protected Type type;
 
     public enum Type {
+        GUI(false),
+        SCRIPT (false),
         RENDER_MODEL (true),
         RIGGED_MODEL (true),
         CAMERA (true),
@@ -41,7 +43,7 @@ public abstract class Attribute implements Cloneable {
     }
 
     public Attribute setEntity(Entity entity) {
-        resetEntity();
+        removeEntity();
         if (entity != null && !entity.getAttributes().contains(this)) {
             entity.getAttributes().add(this);
         }
@@ -49,7 +51,7 @@ public abstract class Attribute implements Cloneable {
         return this;
     }
 
-    public Attribute resetEntity() {
+    public Attribute removeEntity() {
         if (entity != null && entity.getAttributes().contains(this)) {
             entity.getAttributes().remove(this);
         }
