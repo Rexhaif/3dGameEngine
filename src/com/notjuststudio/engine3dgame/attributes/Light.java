@@ -27,4 +27,11 @@ public class Light extends Attribute {
     public Vector3f getColour() {
         return colour;
     }
+
+    @Override
+    public void delete() {
+        super.delete();
+        allLights.remove(this);
+
+    }
 }

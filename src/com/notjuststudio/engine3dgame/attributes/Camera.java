@@ -1,7 +1,6 @@
 package com.notjuststudio.engine3dgame.attributes;
 
-import com.notjuststudio.engine3dgame.Keeper;
-import com.notjuststudio.engine3dgame.util.Maths;
+import com.notjuststudio.engine3dgame.util.MathUtil;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
 
@@ -59,7 +58,7 @@ public class Camera extends Attribute{
 
     private void createProjectionMatrix() {
         float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
-        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
+        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))));
         float x_scale = y_scale / aspectRatio;
         float frustum_length = FAR_PLANE - NEAR_PLANE;
 
@@ -73,12 +72,14 @@ public class Camera extends Attribute{
     }
 
     public void resolveViewMatrix() {
-        viewMatrix.setIdentity();
+        Matrix4f result = new Matrix4f();
+        Matrix4f.setIdentity(result);
 
-        Keeper keeper = getKeeper();
+        Entity entity = getEntity();
 
-        Matrix4f.mul(viewMatrix, Maths.createRotationMatrix(keeper.getLocalAngle()), viewMatrix);
-        Matrix4f.translate(keeper.getLocalPosition().negate(null), viewMatrix, viewMatrix);
+        Matrix4f.mul(Matrix4f.transpose(MathUtil.createRotationMatrix(entity.getRotation()), null), result , result);
+        Matrix4f.translate(entity.getWorldPosition().negate(null), result, result);
+        viewMatrix = result;
     }
 
     public static void setMainCameraIndex(int index) {
@@ -91,5 +92,21 @@ public class Camera extends Attribute{
 
     public static Camera getMainCamera() {
         return allCameras.get(mainIndex);
+    }
+
+    @Override
+    public void delete() {
+        super.delete();
+        if (allCameras.indexOf(this) == mainIndex) {
+            mainIndex = 0;
+        }
+        allCameras.remove(this);
+    }
+
+    @Override
+    public Attribute setEntity(Entity entity) {
+        super.setEntity(entity);
+        resolveViewMatrix();
+        return this;
     }
 }

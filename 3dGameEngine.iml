@@ -8,8 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="lwjgl" level="project" />
-    <orderEntry type="library" name="linux" level="project" />
-    <orderEntry type="library" name="windows" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -19,5 +17,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="linux" level="project" />
+    <orderEntry type="library" name="windows" level="project" />
   </component>
 </module>

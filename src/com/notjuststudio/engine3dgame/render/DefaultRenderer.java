@@ -1,52 +1,50 @@
 package com.notjuststudio.engine3dgame.render;
 
-import com.notjuststudio.engine3dgame.Keeper;
-import com.notjuststudio.engine3dgame.MyShaderProgram;
-import com.notjuststudio.engine3dgame.attributes.Camera;
-import com.notjuststudio.engine3dgame.attributes.Model;
+import com.notjuststudio.engine3dgame.attributes.Entity;
+import com.notjuststudio.engine3dgame.attributes.RenderModel;
 import com.notjuststudio.engine3dgame.shader.ShaderProgram;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by George on 07.01.2017.
  */
 public class DefaultRenderer extends Renderer {
 
-    private Model activeModel;
+    private RenderModel activeRenderModel;
 
-    private void prepareModel(Model model) {
-        activeModel = model;
+    private void prepareModel(RenderModel renderModel) {
+        activeRenderModel = renderModel;
 
-        GL30.glBindVertexArray(activeModel.getData().getVaoID());
+        GL30.glBindVertexArray(activeRenderModel.getData().getVaoID());
 
-        MyShaderProgram activeShader = (MyShaderProgram)model.getTexture().getShaderProgram();
+        ShaderProgram activeShader = renderModel.getTexture().getShaderProgram();
         activeShader.useThis();
-        activeShader.loadProjectionMatrix(Camera.getMainCamera());
-        activeShader.loadViewMatrix(Camera.getMainCamera().getViewMatrix());
-        activeShader.loadLight(MasterRenderer.getLight());
-        activeShader.loadShineVariable(model.getTexture().getShineDamper(),model.getTexture().getReflectivity());
+        activeShader.loadPrepareModel(renderModel);
 
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getTextureID());
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, renderModel.getTexture().getTextureID());
         GL20.glEnableVertexAttribArray(0);
         GL20.glEnableVertexAttribArray(1);
         GL20.glEnableVertexAttribArray(2);
     }
 
-    private void prepareKeeper(Keeper keeper) {
-        ((MyShaderProgram) activeModel.getTexture().getShaderProgram()).loadTransformationMatrix(keeper.getTransformationMatrix());
+    private void prepareEntity(Entity entity) {
+        activeRenderModel.getTexture().getShaderProgram().loadPrepareEntity(entity);
     }
 
     @Override
     public void render() {
-        for (Model model : Model.getKeySet()) {
-            prepareModel(model);
-            for (Keeper keeper : Model.getList(model)) {
-                prepareKeeper(keeper);
-                GL11.glDrawElements(GL11.GL_TRIANGLES, model.getData().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+        for (Map.Entry<RenderModel, List<Entity>> entry : RenderModel.getModelsMap().entrySet()) {
+            prepareModel(entry.getKey());
+            for (Entity entity : entry.getValue()) {
+                prepareEntity(entity);
+                GL11.glDrawElements(GL11.GL_TRIANGLES, entry.getKey().getData().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
             }
             unbind();
             ShaderProgram.useNone();
